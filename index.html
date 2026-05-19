@@ -2,14 +2,107 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Glow Tycoon</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+
+      background-color: #ffeef6;
+      background-image:
+        radial-gradient(#f7c8db 2px, transparent 2px);
+      background-size: 32px 32px;
+
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      background: rgba(255,255,255,0.85);
+
+      border: 5px solid #6b4b74;
+      border-radius: 28px;
+
+      padding: 50px 70px;
+
+      box-shadow: 0 10px 0 #d7bfdc;
+
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 0;
+      margin-bottom: 40px;
+
+      font-size: 64px;
+      color: #6b4b74;
+
+      text-shadow: 3px 3px 0 #fff2a8;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .lang-btn {
+      text-decoration: none;
+
+      background: #ffe680;
+      color: #5c3d64;
+
+      padding: 18px 36px;
+
+      border-radius: 20px;
+      border: 4px solid #6b4b74;
+
+      font-size: 24px;
+      font-weight: bold;
+
+      transition: 0.15s ease;
+      box-shadow: 0 6px 0 #c7a94d;
+    }
+
+    .lang-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 0 #c7a94d;
+    }
+
+    .subtitle {
+      margin-top: 18px;
+      color: #7b6a7f;
+      font-size: 18px;
+    }
+  </style>
 </head>
+
 <body>
-  <h1>Glow Tycoon</h1>
 
-  <a href="./kr/">한국어 버전</a>
-  <br><br>
+  <div class="container">
+    <h1>✨ Glow Tycoon ✨</h1>
 
-  <a href="./en/">English Version</a>
+    <div class="button-group">
+      <a class="lang-btn" href="./kr/">
+        한국어
+      </a>
+
+      <a class="lang-btn" href="./en/">
+        English
+      </a>
+    </div>
+
+    <div class="subtitle">
+      Select your language
+    </div>
+  </div>
+
 </body>
 </html>
