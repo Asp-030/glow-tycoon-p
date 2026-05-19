@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GLOW 클리닉 타이쿤</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+/* ── 변수 ── */
+:root{
+  --pk:#FF6B9D; --pkd:#D94F80; --pkl:#FFE8F3;
+  --mn:#3DD6A8; --mnl:#E0FAF3;
+  --yw:#FFD43B; --ywl:#FFF8D0; --ywd:#C8A000;
+  --rd:#FF4D4D; --rdl:#FFE8E8;
+  --pu:#9B59D0; --pul:#F0E8FF;
+  --bg:#FEF0F8;
+  --panel:#FFFFFF;
+  --deep:#2D0E35;
+  --mid:#7A4888;
+  --lt:#C8A0D8;
+  --bd:#F0D0E8;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;min-height:100vh;font-family:'Noto Sans KR',sans-serif;color:var(--deep);}
+
+/* ── 배경 ── */
+body{
+  background: linear-gradient(160deg,#FFD6EC 0%,#FFF0E0 40%,#E8F8FF 100%);
+  min-height:100vh;
+}
+
+/* ── 상단 HUD 바 ── */
+#hud{
+  background:linear-gradient(90deg,#FF6B9D,#C96BE0);
+  padding:0 20px;
+  height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 3px 16px rgba(180,60,140,.3);
+  position:sticky;top:0;z-index:200;
+}
+.logo{
+  font-size:20px;font-weight:900;color:#fff;
+  text-shadow:0 2px 8px rgba(0,0,0,.2);
+  letter-spacing:-0.5px;
+}
+.logo em{color:var(--yw);font-style:normal;}
+.hud-right{display:flex;gap:8px;align-items:center;}
+/* HUD 스탯 박스 */
+.hstat{
+  background:rgba(255,255,255,.22);
+  border:1.5px solid rgba(255,255,255,.4);
+  border-radius:12px;padding:4px 12px;
+  display:flex;align-items:center;gap:5px;
+  font-size:12px;font-weight:900;color:#fff;
+  backdrop-filter:blur(4px);
+}
+.hstat .label{font-size:9px;font-weight:700;opacity:.75;display:block;line-height:1;}
+.hstat .val{font-size:13px;font-weight:900;line-height:1.2;}
+.hstat.day-stat{background:rgba(255,212,59,.3);border-color:rgba(255,212,59,.6);}
+
+/* ── 목표 게이지 바 ── */
+#goalbar{
+  background:rgba(255,255,255,.72);
+  backdrop-filter:blur(8px);
+  border-bottom:2px solid var(--bd);
+  padding:8px 20px;
+  display:flex;gap:16px;
+  position:sticky;top:52px;z-index:199;
+}
+.gi{flex:1;}
+.gi-lbl{font-size:10px;font-weight:700;color:var(--mid);display:flex;justify-content:space-between;margin-bottom:4px;}
+.gi-track{
+  height:10px;background:#EDD8F0;border-radius:6px;
+  overflow:hidden;
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.08);
+}
+.gi-fill{height:100%;border-radius:6px;transition:width .5s cubic-bezier(.34,1.2,.64,1);}
+.gi-fill.m{background:linear-gradient(90deg,#E8A000,#FFD43B,#FFE870);}
+.gi-fill.r{background:linear-gradient(90deg,#20B888,#3DD6A8,#80F0C8);}
+
+/* ── 메인 ── */
+#main{max-width:760px;margin:0 auto;padding:16px 14px 80px;}
+
+/* ── 시술 씬 ── */
+#scene{
+  display:grid;
+  grid-template-columns:1fr 136px 1fr;
+  gap:12px;align-items:start;
+  margin-bottom:14px;
+}
+
+/* 얼굴 패널 — 게임 카드 스타일 */
+.face-panel{
+  background:var(--panel);
+  border-radius:22px;
+  border:3px solid var(--bd);
+  box-shadow:0 6px 0 #EAC0D8, 0 8px 24px rgba(180,60,140,.15);
+  padding:14px 10px 12px;
+  text-align:center;
+  transition:transform .15s, box-shadow .15s;
+}
+.face-panel:hover{ transform:translateY(-2px); box-shadow:0 8px 0 #EAC0D8, 0 12px 28px rgba(180,60,140,.18); }
+.fp-title{
+  font-size:10px;font-weight:900;letter-spacing:.1em;
+  color:var(--lt);margin-bottom:8px;text-transform:uppercase;
+}
+.face-box{display:flex;justify-content:center;margin-bottom:10px;}
+.pname{font-size:15px;font-weight:900;color:var(--deep);}
+.ptag{
+  display:inline-block;
+  background:linear-gradient(90deg,var(--pk),#C060D0);
+  color:#fff;
+  font-size:10px;font-weight:700;
+  padding:3px 10px;border-radius:20px;
+  margin-top:5px;
+  box-shadow:0 2px 6px rgba(200,60,140,.3);
+}
+.pfee{
+  font-size:13px;font-weight:900;color:var(--ywd);
+  margin-top:5px;
+  background:var(--ywl);border:1.5px solid #FFD43B;
+  border-radius:10px;padding:3px 10px;display:inline-block;
+}
+.ehint{font-size:12px;color:var(--lt);padding:20px 0;line-height:1.6;}
+
+/* ── 중앙 패널 ── */
+#mid-col{display:flex;flex-direction:column;align-items:center;gap:8px;}
+
+/* 기기 박스 */
+.dev-box{
+  width:120px;height:120px;
+  background:linear-gradient(145deg,#FFF5FF,#F0E0FF);
+  border:3px solid #DDB8F0;
+  border-radius:20px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 5px 0 #CCA0DC, 0 8px 20px rgba(160,80,200,.15);
+}
+
+/* 카트리지 버튼 */
+.cbt{
+  width:128px;padding:8px 10px;
+  border:2.5px solid;border-radius:14px;
+  font-family:'Noto Sans KR',sans-serif;font-size:11px;font-weight:900;
+  cursor:pointer;text-align:left;transition:all .15s;
+  box-shadow:0 3px 0 rgba(0,0,0,.12);
+}
+.cbt.gen{
+  background:#F0FDF8;border-color:#80E0B8;color:#0A7050;
+  box-shadow:0 3px 0 #60C090;
+}
+.cbt.gen:hover,.cbt.gen.on{
+  background:var(--mnl);border-color:var(--mn);
+  transform:translateY(-1px);box-shadow:0 4px 0 #40B080;
+}
+.cbt.ill{
+  background:#FFF5F5;border-color:#FFB0B0;color:#B02020;
+  box-shadow:0 3px 0 #E08080;
+}
+.cbt.ill:hover,.cbt.ill.on{
+  background:var(--rdl);border-color:var(--rd);
+  transform:translateY(-1px);box-shadow:0 4px 0 #C06060;
+}
+.cbt-sub{font-size:9px;font-weight:700;margin-top:2px;opacity:.75;}
+
+/* 시술 버튼 */
+#go-btn{
+  width:128px;padding:12px 0;
+  background:linear-gradient(160deg,#FF7BAC,#D94F80);
+  color:#fff;border:none;border-radius:14px;
+  font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:900;
+  cursor:pointer;
+  box-shadow:0 5px 0 #A03060, 0 8px 20px rgba(200,60,120,.35);
+  transition:all .15s;
+  letter-spacing:-.3px;
+}
+#go-btn:hover{
+  background:linear-gradient(160deg,#FF9AC0,#FF6B9D);
+  transform:translateY(-2px);
+  box-shadow:0 7px 0 #A03060, 0 12px 24px rgba(200,60,120,.4);
+}
+#go-btn:active{transform:translateY(2px);box-shadow:0 2px 0 #A03060;}
+#go-btn:disabled{
+  background:linear-gradient(160deg,#E0D0E8,#CCC0D8);
+  color:#A090B0;box-shadow:0 3px 0 #B0A0C0;
+  cursor:not-allowed;transform:none;
+}
+
+/* ── 대기줄 ── */
+#queue-wrap{
+  background:rgba(255,255,255,.8);
+  backdrop-filter:blur(8px);
+  border:2.5px solid var(--bd);
+  border-radius:20px;
+  padding:12px 14px;
+  box-shadow:0 4px 0 #EAC0D8, 0 6px 18px rgba(180,60,140,.1);
+  margin-bottom:12px;
+}
+.queue-title{
+  font-size:11px;font-weight:900;color:var(--mid);
+  margin-bottom:10px;display:flex;align-items:center;gap:6px;
+}
+.queue-title::before{content:'';display:block;width:4px;height:14px;background:linear-gradient(var(--pk),var(--pu));border-radius:2px;}
+#queue-row{display:flex;gap:8px;flex-wrap:wrap;}
+
+/* 손님 카드 */
+.qc{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  background:linear-gradient(145deg,#FFF8FC,#F8F0FF);
+  border:2.5px solid var(--bd);border-radius:16px;
+  padding:8px 10px;cursor:pointer;
+  transition:all .15s;min-width:76px;position:relative;
+  box-shadow:0 3px 0 #E8C0D8;
+}
+.qc:hover{
+  border-color:var(--pk);transform:translateY(-3px);
+  box-shadow:0 6px 0 #E8C0D8, 0 8px 16px rgba(200,60,120,.15);
+}
+.qc.on{
+  border-color:var(--pkd);
+  background:linear-gradient(145deg,#FFEEF6,#F8E0FF);
+  box-shadow:0 3px 0 #D090B8;
+}
+.qc.done{opacity:.28;pointer-events:none;filter:grayscale(.8);}
+.qvip{
+  position:absolute;top:-8px;right:-4px;
+  background:linear-gradient(135deg,#FFD43B,#FF9900);
+  color:#5A3000;font-size:8px;font-weight:900;
+  padding:2px 7px;border-radius:8px;
+  box-shadow:0 2px 6px rgba(200,100,0,.35);
+}
+.qface{font-size:26px;line-height:1.1;}
+.qname{font-size:10px;font-weight:900;color:var(--deep);}
+.qcon{font-size:9px;color:var(--mid);font-weight:700;}
+
+/* ── 위험 배너 ── */
+#warn-banner{
+  background:linear-gradient(90deg,#FFF3C0,#FFE870);
+  border:2px solid var(--yw);border-radius:14px;
+  padding:9px 14px;font-size:11px;color:#7A5000;font-weight:900;
+  display:none;align-items:center;gap:8px;margin-bottom:12px;
+  box-shadow:0 3px 0 #E8C000, 0 5px 14px rgba(200,160,0,.2);
+}
+
+/* ── 로그 ── */
+#log-box{display:flex;flex-direction:column;gap:5px;}
+.log{
+  font-size:11px;font-weight:700;
+  padding:7px 12px;border-radius:10px;
+  border-left:4px solid var(--bd);
+  background:rgba(255,255,255,.7);
+  backdrop-filter:blur(4px);
+  color:var(--mid);
+}
+.log.ok{border-left-color:var(--mn);color:#0A7050;background:rgba(224,250,243,.8);}
+.log.bad{border-left-color:var(--rd);color:#B02020;background:rgba(255,232,232,.8);}
+.log.warn{border-left-color:var(--yw);color:#7A5000;background:rgba(255,248,208,.8);}
+
+/* ── 결과/엔딩 모달 ── */
+.ov{
+  position:fixed;inset:0;
+  background:rgba(40,10,60,.55);
+  backdrop-filter:blur(6px);
+  display:flex;align-items:center;justify-content:center;
+  z-index:500;opacity:0;pointer-events:none;transition:opacity .22s;
+}
+.ov.show{opacity:1;pointer-events:all;}
+.modal{
+  background:var(--panel);
+  border-radius:28px;
+  border:3px solid var(--bd);
+  padding:28px 24px;max-width:380px;width:92%;
+  text-align:center;
+  transform:scale(.85) translateY(20px);
+  transition:transform .28s cubic-bezier(.34,1.4,.64,1);
+  box-shadow:0 8px 0 #D8A0C8, 0 20px 60px rgba(40,10,60,.35);
+}
+.ov.show .modal{transform:scale(1) translateY(0);}
+.m-face-wrap{
+  display:flex;justify-content:center;margin-bottom:12px;
+}
+.m-ttl{
+  font-size:22px;font-weight:900;margin-bottom:8px;
+  text-shadow:0 1px 0 rgba(0,0,0,.08);
+}
+.m-dsc{
+  font-size:13px;color:var(--mid);line-height:1.8;
+  white-space:pre-line;margin-bottom:16px;
+  background:#FAF0FF;border-radius:12px;padding:10px 14px;
+}
+.m-chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:18px;}
+.cp{
+  font-size:12px;font-weight:900;padding:5px 14px;border-radius:20px;
+  box-shadow:0 2px 0 rgba(0,0,0,.1);
+}
+.cpp{background:linear-gradient(90deg,#C0F0DC,#E0FAF0);color:#0A7050;border:1.5px solid #80DDB0;}
+.cpn{background:linear-gradient(90deg,#FFD0D0,#FFE8E8);color:#B02020;border:1.5px solid #FFB0B0;}
+.mbtn{
+  background:linear-gradient(160deg,#FF7BAC,#D94F80);
+  color:#fff;border:none;border-radius:14px;
+  padding:12px 32px;
+  font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:900;
+  cursor:pointer;
+  box-shadow:0 4px 0 #A03060, 0 8px 20px rgba(200,60,120,.3);
+  transition:all .15s;
+}
+.mbtn:hover{background:linear-gradient(160deg,#FF9AC0,#FF6B9D);transform:translateY(-1px);}
+.mbtn.gold{
+  background:linear-gradient(160deg,#FFD43B,#FF9900);color:#5A3000;
+  box-shadow:0 4px 0 #B07000, 0 8px 20px rgba(200,120,0,.3);
+}
+
+/* ── 애니메이션 ── */
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes bouncein{0%{transform:scale(0.5)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.fadein{animation:fadein .25s ease forwards;}
+.bouncein{animation:bouncein .35s cubic-bezier(.34,1.4,.64,1) forwards;}
+
+/* ── 우측 결과 패널 트랜지션 ── */
+#right-panel{transition:opacity .3s;}
+</style>
+</head>
+<body>
+
+<!-- ── HUD ── -->
+<div id="hud">
+  <div class="logo">✨ <em>GLOW</em> 클리닉</div>
+  <div class="hud-right">
+    <div class="hstat day-stat">
+      <span class="label">DAY</span>
+      <span class="val" id="hd-d">1</span>
+    </div>
+    <div class="hstat">
+      <span class="label">💰 수익</span>
+      <span class="val" id="hd-m">0원</span>
+    </div>
+    <div class="hstat">
+      <span class="label">⭐ 평판</span>
+      <span class="val" id="hd-r">60점</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── 목표 게이지 ── -->
+<div id="goalbar">
+  <div class="gi">
+    <div class="gi-lbl">
+      <span>💰 목표 수익</span>
+      <span id="gl-m">0 / 1,000,000원</span>
+    </div>
+    <div class="gi-track"><div class="gi-fill m" id="gf-m" style="width:0%"></div></div>
+  </div>
+  <div class="gi">
+    <div class="gi-lbl">
+      <span>⭐ 클리닉 평판</span>
+      <span id="gl-r">60 / 100점</span>
+    </div>
+    <div class="gi-track"><div class="gi-fill r" id="gf-r" style="width:60%"></div></div>
+  </div>
+</div>
+
+<!-- ── 메인 ── -->
+<div id="main">
+
+  <!-- 시술 씬 -->
+  <div id="scene">
+
+    <!-- 왼쪽: 현재 손님 -->
+    <div class="face-panel">
+      <div class="fp-title">🧖 현재 손님</div>
+      <div class="face-box">
+        <svg id="lf-svg" width="150" height="170" viewBox="0 0 150 170"></svg>
+      </div>
+      <div id="left-info">
+        <div class="ehint">대기열에서<br>손님을 선택해주세요 👇</div>
+      </div>
+    </div>
+
+    <!-- 중앙: 시술 컨트롤 -->
+    <div id="mid-col">
+      <!-- 기기 -->
+      <div class="dev-box">
+        <svg width="84" height="84" viewBox="0 0 84 84">
+          <!-- 기기 본체 -->
+          <rect x="24" y="6" width="36" height="50" rx="9" fill="#F0E0FF" stroke="#CCA8E8" stroke-width="2"/>
+          <!-- 화면 -->
+          <rect x="29" y="11" width="26" height="18" rx="5" fill="#E8D0FF" stroke="#C090E0" stroke-width="1"/>
+          <rect x="31" y="13" width="22" height="14" rx="3" fill="white" opacity=".6"/>
+          <!-- 버튼들 -->
+          <circle cx="36" cy="37" r="4" fill="#FF7BAC" opacity=".8"/>
+          <circle cx="48" cy="37" r="4" fill="#3DD6A8" opacity=".8"/>
+          <rect x="34" y="44" width="16" height="5" rx="2.5" fill="#DDB8F0"/>
+          <!-- 손잡이 -->
+          <rect x="38" y="56" width="8" height="18" rx="4" fill="#DDB8F0"/>
+          <!-- 팁 -->
+          <circle cx="42" cy="76" r="5.5" fill="#E8D0FF" stroke="#CCA8E8" stroke-width="1.5"/>
+          <circle cx="42" cy="76" r="2.5" fill="#FF7BAC" opacity=".5" id="dev-dot"/>
+          <!-- 라벨 -->
+          <text x="42" y="83" text-anchor="middle" font-size="7" fill="#A080C0" font-family="Noto Sans KR" font-weight="700" id="dev-lbl">미선택</text>
+        </svg>
+      </div>
+
+      <!-- 카트리지 선택 -->
+      <button class="cbt gen" id="btn-gen" onclick="pickCart('genuine')">
+        ✅ 정품 카트리지
+        <div class="cbt-sub">원가 20,000 · 위험 0%</div>
+      </button>
+      <button class="cbt ill" id="btn-ill" onclick="pickCart('illegal')">
+        ⛔ 불법 카트리지
+        <div class="cbt-sub" id="ill-sub">원가 8,000 · 위험 20%</div>
+      </button>
+
+      <!-- 시술 버튼 -->
+      <button id="go-btn" disabled onclick="doTreat()">시술 시작!</button>
+    </div>
+
+    <!-- 오른쪽: 결과 -->
+    <div class="face-panel" id="right-panel" style="opacity:.3;">
+      <div class="fp-title">✨ 시술 결과</div>
+      <div class="face-box">
+        <svg id="rf-svg" width="150" height="170" viewBox="0 0 150 170"></svg>
+      </div>
+      <div id="right-info">
+        <div class="ehint">시술 후<br>결과가 여기 표시됩니다</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 대기줄 -->
+  <div id="queue-wrap">
+    <div class="queue-title">대기 손님 — 클릭해서 선택하세요</div>
+    <div id="queue-row"></div>
+  </div>
+
+  <!-- 위험 배너 -->
+  <div id="warn-banner">⚠️ <span id="warn-txt"></span></div>
+
+  <!-- 로그 -->
+  <div id="log-box"></div>
+</div>
+
+<!-- ── 결과 모달 ── -->
+<div class="ov" id="r-ov">
+  <div class="modal">
+    <div class="m-face-wrap" id="r-face-wrap"></div>
+    <div class="m-ttl" id="r-ttl">시술 성공!</div>
+    <div class="m-dsc" id="r-dsc"></div>
+    <div class="m-chips" id="r-chips"></div>
+    <button class="mbtn" onclick="closeResult()">확인</button>
+  </div>
+</div>
+
+<!-- ── 엔딩 모달 ── -->
+<div class="ov" id="e-ov">
+  <div class="modal">
+    <div class="m-face-wrap" id="e-face-wrap"></div>
+    <div class="m-ttl" id="e-ttl"></div>
+    <div class="m-dsc" id="e-dsc"></div>
+    <button class="mbtn" id="e-btn" onclick="restart()">다시 시작</button>
+  </div>
+</div>
+
+<script>
+const PT=[
+  {id:1,name:'김지영',concern:'볼 처짐',    fee:110000,sk:'f1'},
+  {id:2,name:'박미숙',concern:'목 주름',    fee:140000,sk:'f2',vip:1},
+  {id:3,name:'이수진',concern:'턱선 리프팅',fee:120000,sk:'f3'},
+  {id:4,name:'최하은',concern:'눈가 탄력',  fee:100000,sk:'f4'},
+  {id:5,name:'정태영',concern:'이마 주름',  fee:115000,sk:'m1'},
+  {id:6,name:'한소희',concern:'전체 리프팅',fee:160000,sk:'f2',vip:1},
+  {id:7,name:'오민지',concern:'입꼬리 처짐',fee:105000,sk:'f3'},
+  {id:8,name:'윤채원',concern:'팔자주름',   fee:125000,sk:'f1'},
+];
+const SK={
+  f1:{skin:'#FDD9A8',shade:'#F0C070',hair:'#2A1008',hrhi:'#5A2E14',lip:'#E87090',blush:'rgba(255,130,130,.22)',brow:'#2A1008'},
+  f2:{skin:'#F5C87A',shade:'#E0A050',hair:'#5A2E10',hrhi:'#8A4828',lip:'#D06878',blush:'rgba(240,110,90,.18)',brow:'#5A2E10'},
+  f3:{skin:'#ECA860',shade:'#D08838',hair:'#180C04',hrhi:'#3C1E0C',lip:'#C05868',blush:'rgba(210,90,70,.15)',brow:'#180C04'},
+  f4:{skin:'#FFE0B8',shade:'#F8C898',hair:'#4A2818',hrhi:'#7A4838',lip:'#F090A8',blush:'rgba(255,150,150,.25)',brow:'#4A2818'},
+  m1:{skin:'#F0C890',shade:'#DCA868',hair:'#1A0E08',hrhi:'#3A2010',lip:'#B07868',blush:'rgba(190,100,80,.12)',brow:'#1A0E08'},
+};
+
+/* ── 얼굴 그리기 — 캐릭터별 완전 차별화 ── */
+function drawFace(el, sk, state){
+  const W=150, H=170;
+  el.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  el.setAttribute('width',W); el.setAttribute('height',H);
+  const c = SK[sk]||SK.f1;
+  const cx = 75;
+
+  // clipPath ID (고유)
+  const clipId = 'cl_'+Math.random().toString(36).slice(2,7);
+
+  /* ── 캐릭터별 얼굴 파라미터 ── */
+  const P = {
+    // f1: 김지영/윤채원 — 30대, 보통 타원형
+    f1:{ fcy:84, frx:44, fry:52, eyeY:76, mouthY:108, browY:62,
+         eyeRx:11,  eyeRy:9,  eyeGap:21, pupilR:4.5,
+         hairStyle:'bob', wrinkle:false, aged:false },
+    // f2: 박미숙/한소희 — 50대, 볼 처짐, 눈가 주름, 흰머리 섞임
+    f2:{ fcy:88, frx:46, fry:54, eyeY:78, mouthY:114, browY:64,
+         eyeRx:10,  eyeRy:7.5, eyeGap:22, pupilR:4,
+         hairStyle:'short_gray', wrinkle:true, aged:true },
+    // f3: 이수진/오민지 — 20대, 갸름한 역삼각, 큰 눈
+    f3:{ fcy:82, frx:38, fry:56, eyeY:74, mouthY:106, browY:60,
+         eyeRx:13,  eyeRy:11, eyeGap:20, pupilR:5.5,
+         hairStyle:'long', wrinkle:false, aged:false },
+    // f4: 최하은 — 10대 후반, 동그란 얼굴, 크고 반짝이는 눈
+    f4:{ fcy:86, frx:48, fry:52, eyeY:78, mouthY:108, browY:64,
+         eyeRx:14,  eyeRy:12, eyeGap:20, pupilR:6,
+         hairStyle:'twin_tail', wrinkle:false, aged:false },
+    // m1: 정태영 — 40대 남성, 각진 턱, 짧은 머리, 이마 주름
+    m1:{ fcy:86, frx:46, fry:52, eyeY:76, mouthY:110, browY:62,
+         eyeRx:10,  eyeRy:7,  eyeGap:22, pupilR:4.5,
+         hairStyle:'male_short', wrinkle:true, aged:false },
+  };
+  const p = P[sk]||P.f1;
+  const {fcy,frx,fry,eyeY,mouthY,browY,eyeRx,eyeRy,eyeGap,pupilR} = p;
+
+  /* ── defs (clipPath) ── */
+  const defs=`<defs><clipPath id="${clipId}"><ellipse cx="${cx}" cy="${fcy}" rx="${frx-1}" ry="${fry-1}"/></clipPath></defs>`;
+
+  /* ── 얼굴 실루엣 ── */
+  let faceShape='';
+  if(sk==='m1'){
+    // 남성: 사각턱 느낌 — 아래쪽을 약간 각지게
+    faceShape=`
+      <path d="M${cx-frx},${fcy}
+               Q${cx-frx},${fcy+fry*0.3} ${cx-frx*0.6},${fcy+fry*0.82}
+               Q${cx-frx*0.2},${fcy+fry} ${cx},${fcy+fry}
+               Q${cx+frx*0.2},${fcy+fry} ${cx+frx*0.6},${fcy+fry*0.82}
+               Q${cx+frx},${fcy+fry*0.3} ${cx+frx},${fcy}
+               Q${cx+frx},${fcy-fry} ${cx},${fcy-fry}
+               Q${cx-frx},${fcy-fry} ${cx-frx},${fcy} Z"
+        fill="${c.skin}"/>`;
+  } else if(sk==='f3'){
+    // 20대: 갸름한 V라인
+    faceShape=`
+      <path d="M${cx-frx},${fcy}
+               Q${cx-frx+2},${fcy+fry*0.5} ${cx-8},${fcy+fry*0.95}
+               Q${cx},${fcy+fry+4} ${cx+8},${fcy+fry*0.95}
+               Q${cx+frx-2},${fcy+fry*0.5} ${cx+frx},${fcy}
+               Q${cx+frx},${fcy-fry} ${cx},${fcy-fry}
+               Q${cx-frx},${fcy-fry} ${cx-frx},${fcy} Z"
+        fill="${c.skin}"/>`;
+  } else if(sk==='f4'){
+    // 10대: 동글동글한 얼굴
+    faceShape=`<ellipse cx="${cx}" cy="${fcy+4}" rx="${frx}" ry="${fry-2}" fill="${c.skin}"/>`;
+  } else {
+    faceShape=`<ellipse cx="${cx}" cy="${fcy}" rx="${frx}" ry="${fry}" fill="${c.skin}"/>`;
+  }
+
+  /* ── 귀 ── */
+  const ears=`
+    <ellipse cx="${cx-frx+2}" cy="${fcy+4}" rx="8" ry="${sk==='f3'?11:10}" fill="${c.skin}"/>
+    <ellipse cx="${cx+frx-2}" cy="${fcy+4}" rx="8" ry="${sk==='f3'?11:10}" fill="${c.skin}"/>
+    <ellipse cx="${cx-frx+2}" cy="${fcy+4}" rx="5" ry="6" fill="${c.shade}"/>
+    <ellipse cx="${cx+frx-2}" cy="${fcy+4}" rx="5" ry="6" fill="${c.shade}"/>`;
+
+  /* ── 머리카락 ── */
+  let hBack='', hFront='';
+  if(p.hairStyle==='male_short'){
+    hBack=`<ellipse cx="${cx}" cy="${fcy-22}" rx="${frx+4}" ry="${fry*0.52}" fill="${c.hair}"/>`;
+    hFront=`<path d="M${cx-frx+2},${fcy-32} Q${cx-20},${fcy-68} ${cx},${fcy-68} Q${cx+20},${fcy-68} ${cx+frx-2},${fcy-32}" fill="${c.hair}"/>
+      <path d="M${cx-frx},${fcy-30} Q${cx-34},${fcy-58} ${cx-18},${fcy-46}" fill="${c.hrhi}" opacity=".35"/>`;
+  } else if(p.hairStyle==='long'){
+    // 긴 생머리 — 옆으로 길게 늘어짐
+    hBack=`<ellipse cx="${cx}" cy="${fcy-10}" rx="${frx+8}" ry="${fry*0.72}" fill="${c.hair}"/>
+      <rect x="${cx-frx-10}" y="${fcy+8}" width="16" height="55" rx="8" fill="${c.hair}"/>
+      <rect x="${cx+frx-6}" y="${fcy+8}" width="16" height="55" rx="8" fill="${c.hair}"/>`;
+    hFront=`<path d="M${cx-frx+2},${fcy-30} Q${cx-26},${fcy-72} ${cx},${fcy-74} Q${cx+26},${fcy-72} ${cx+frx-2},${fcy-30}" fill="${c.hair}"/>
+      <path d="M${cx-frx-2},${fcy-28} Q${cx-40},${fcy-64} ${cx-22},${fcy-50}" fill="${c.hrhi}" opacity=".28"/>
+      <path d="M${cx+frx+2},${fcy-28} Q${cx+40},${fcy-64} ${cx+22},${fcy-50}" fill="${c.hrhi}" opacity=".2"/>`;
+  } else if(p.hairStyle==='twin_tail'){
+    // 양갈래 — 귀여운 느낌
+    hBack=`<ellipse cx="${cx}" cy="${fcy-10}" rx="${frx+6}" ry="${fry*0.68}" fill="${c.hair}"/>
+      <ellipse cx="${cx-frx-8}" cy="${fcy+30}" rx="10" ry="22" fill="${c.hair}"/>
+      <ellipse cx="${cx+frx+8}" cy="${fcy+30}" rx="10" ry="22" fill="${c.hair}"/>`;
+    hFront=`<path d="M${cx-frx+2},${fcy-30} Q${cx-24},${fcy-70} ${cx},${fcy-72} Q${cx+24},${fcy-70} ${cx+frx-2},${fcy-30}" fill="${c.hair}"/>
+      <!-- 양갈래 묶음 -->
+      <ellipse cx="${cx-frx+4}" cy="${fcy+8}" rx="6" ry="6" fill="${c.hrhi}" opacity=".7"/>
+      <ellipse cx="${cx+frx-4}" cy="${fcy+8}" rx="6" ry="6" fill="${c.hrhi}" opacity=".7"/>`;
+  } else if(p.hairStyle==='short_gray'){
+    // 중년 여성: 짧은 머리, 흰머리 섞임
+    hBack=`<ellipse cx="${cx}" cy="${fcy-14}" rx="${frx+5}" ry="${fry*0.60}" fill="${c.hair}"/>
+      <rect x="${cx-frx-3}" y="${fcy+10}" width="11" height="28" rx="5" fill="${c.hair}"/>
+      <rect x="${cx+frx-8}" y="${fcy+10}" width="11" height="28" rx="5" fill="${c.hair}"/>`;
+    hFront=`<path d="M${cx-frx+2},${fcy-30} Q${cx-24},${fcy-66} ${cx},${fcy-68} Q${cx+24},${fcy-66} ${cx+frx-2},${fcy-30}" fill="${c.hair}"/>
+      <!-- 흰머리 섞임 -->
+      <path d="M${cx-10},${fcy-68} Q${cx+4},${fcy-65} ${cx+18},${fcy-58}" stroke="#D8D0C0" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".7"/>
+      <path d="M${cx-22},${fcy-62} Q${cx-8},${fcy-60} ${cx+4},${fcy-52}" stroke="#E0D8C8" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".55"/>`;
+  } else {
+    // bob (f1: 30대)
+    hBack=`<ellipse cx="${cx}" cy="${fcy-12}" rx="${frx+6}" ry="${fry*0.70}" fill="${c.hair}"/>
+      <rect x="${cx-frx-4}" y="${fcy+12}" width="12" height="36" rx="6" fill="${c.hair}"/>
+      <rect x="${cx+frx-8}" y="${fcy+12}" width="12" height="36" rx="6" fill="${c.hair}"/>`;
+    hFront=`<path d="M${cx-frx+2},${fcy-30} Q${cx-26},${fcy-68} ${cx},${fcy-70} Q${cx+26},${fcy-68} ${cx+frx-2},${fcy-30}" fill="${c.hair}"/>
+      <path d="M${cx-frx},${fcy-28} Q${cx-38},${fcy-60} ${cx-20},${fcy-48}" fill="${c.hrhi}" opacity=".30"/>`;
+  }
+
+  /* ── 눈썹 ── */
+  let brows='';
+  if(sk==='m1'){
+    // 남성: 굵고 직선적인 눈썹
+    brows=`<path d="M${cx-34},${browY+1} L${cx-12},${browY-3}" stroke="${c.brow}" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+      <path d="M${cx+12},${browY-3} L${cx+34},${browY+1}" stroke="${c.brow}" stroke-width="3.2" fill="none" stroke-linecap="round"/>`;
+  } else if(p.aged){
+    // 중년: 눈썹이 처지고 흐릿함
+    brows=`<path d="M${cx-33},${browY+4} Q${cx-22},${browY} ${cx-12},${browY+3}" stroke="${c.brow}" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".7"/>
+      <path d="M${cx+12},${browY+3} Q${cx+22},${browY} ${cx+33},${browY+4}" stroke="${c.brow}" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".7"/>`;
+  } else if(sk==='f3'){
+    // 20대: 가늘고 아치형
+    brows=`<path d="M${cx-30},${browY+1} Q${cx-20},${browY-6} ${cx-10},${browY+1}" stroke="${c.brow}" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <path d="M${cx+10},${browY+1} Q${cx+20},${browY-6} ${cx+30},${browY+1}" stroke="${c.brow}" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
+  } else if(sk==='f4'){
+    // 10대: 짧고 둥근 눈썹
+    brows=`<path d="M${cx-27},${browY+2} Q${cx-18},${browY-4} ${cx-10},${browY+2}" stroke="${c.brow}" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M${cx+10},${browY+2} Q${cx+18},${browY-4} ${cx+27},${browY+2}" stroke="${c.brow}" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+  } else {
+    brows=`<path d="M${cx-33},${browY+2} Q${cx-22},${browY-3} ${cx-12},${browY+1}" stroke="${c.brow}" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M${cx+12},${browY+1} Q${cx+22},${browY-3} ${cx+33},${browY+2}" stroke="${c.brow}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`;
+  }
+
+  /* ── 코 ── */
+  const noseScale = sk==='f3'?0.85 : sk==='f4'?1.1 : 1;
+  const nose=`
+    <ellipse cx="${cx-4}" cy="${fcy+12}" rx="${3.2*noseScale}" ry="${2*noseScale}" fill="rgba(0,0,0,.09)"/>
+    <ellipse cx="${cx+4}" cy="${fcy+12}" rx="${3.2*noseScale}" ry="${2*noseScale}" fill="rgba(0,0,0,.09)"/>
+    <path d="M${cx-4},${fcy+10} Q${cx},${fcy+6} ${cx+4},${fcy+10}" stroke="rgba(0,0,0,.09)" stroke-width="1.2" fill="none"/>`;
+
+  /* ── 볼터치 ── */
+  const blushRx = sk==='f4'?17 : sk==='f2'?12 : 14;
+  const blush=`
+    <ellipse cx="${cx-30}" cy="${eyeY+18}" rx="${blushRx}" ry="8" fill="${c.blush}"/>
+    <ellipse cx="${cx+30}" cy="${eyeY+18}" rx="${blushRx}" ry="8" fill="${c.blush}"/>`;
+
+  /* ── 주름 (aging/male) ── */
+  let wrinkles='';
+  if(sk==='f2'){
+    // 중년 여성: 눈꼬리 주름, 팔자주름, 처진 볼
+    wrinkles=`
+      <!-- 눈꼬리 잔주름 -->
+      <path d="M${cx-10},${eyeY+8} Q${cx-4},${eyeY+12} ${cx-2},${eyeY+18}" stroke="rgba(0,0,0,.1)" stroke-width="1" fill="none" stroke-linecap="round"/>
+      <path d="M${cx+10},${eyeY+8} Q${cx+4},${eyeY+12} ${cx+2},${eyeY+18}" stroke="rgba(0,0,0,.1)" stroke-width="1" fill="none" stroke-linecap="round"/>
+      <!-- 팔자주름 -->
+      <path d="M${cx-18},${eyeY+18} Q${cx-22},${mouthY-4} ${cx-16},${mouthY+2}" stroke="rgba(0,0,0,.09)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      <path d="M${cx+18},${eyeY+18} Q${cx+22},${mouthY-4} ${cx+16},${mouthY+2}" stroke="rgba(0,0,0,.09)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      <!-- 처진 볼 음영 -->
+      <ellipse cx="${cx-32}" cy="${mouthY-4}" rx="10" ry="6" fill="rgba(0,0,0,.05)"/>
+      <ellipse cx="${cx+32}" cy="${mouthY-4}" rx="10" ry="6" fill="rgba(0,0,0,.05)"/>`;
+  } else if(sk==='m1'){
+    // 남성: 이마 주름, 짙은 눈썹 아래 그림자, 수염 자국
+    wrinkles=`
+      <!-- 이마 가로 주름 2줄 -->
+      <path d="M${cx-22},${browY-10} Q${cx},${browY-13} ${cx+22},${browY-10}" stroke="rgba(0,0,0,.1)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      <path d="M${cx-18},${browY-4}  Q${cx},${browY-7}  ${cx+18},${browY-4}" stroke="rgba(0,0,0,.08)" stroke-width="1" fill="none" stroke-linecap="round"/>
+      <!-- 수염 자국 (입 주변) -->
+      <ellipse cx="${cx}" cy="${mouthY+8}" rx="18" ry="9" fill="rgba(80,40,20,.07)"/>`;
+  }
+
+  /* ── 눈 (state & 캐릭터별) ── */
+  function eyePair(happy){
+    if(happy){
+      // 기뻐서 눈 감김 — 크기별로 살짝 다르게
+      const arc = eyeRx*0.9;
+      return `
+        <path d="M${cx-eyeGap-arc},${eyeY+2} Q${cx-eyeGap},${eyeY-eyeRy-2} ${cx-eyeGap+arc},${eyeY+2}" stroke="${c.brow}" stroke-width="${sk==='f4'?3.2:2.6}" fill="none" stroke-linecap="round"/>
+        <path d="M${cx+eyeGap-arc},${eyeY+2} Q${cx+eyeGap},${eyeY-eyeRy-2} ${cx+eyeGap+arc},${eyeY+2}" stroke="${c.brow}" stroke-width="${sk==='f4'?3.2:2.6}" fill="none" stroke-linecap="round"/>`;
+    }
+    // 노멀 눈 — 캐릭터별 크기
+    const ex1=cx-eyeGap, ex2=cx+eyeGap;
+    // 중년(f2)은 눈이 살짝 처져 보이게
+    const droop = p.aged ? 2 : 0;
+    return `
+      <ellipse cx="${ex1}" cy="${eyeY}"        rx="${eyeRx}"   ry="${eyeRy}"   fill="white"/>
+      <ellipse cx="${ex1}" cy="${eyeY+droop*0.3}" rx="${eyeRx*0.65}" ry="${eyeRy*0.82}" fill="${c.brow}"/>
+      <ellipse cx="${ex1}" cy="${eyeY+droop*0.3}" rx="${pupilR}"     ry="${pupilR*1.05}" fill="#111"/>
+      <ellipse cx="${ex1-2}" cy="${eyeY+droop*0.3-2}" rx="1.8" ry="1.8" fill="rgba(255,255,255,.82)"/>
+      <path d="M${ex1-eyeRx-1},${eyeY-droop-3} Q${ex1},${eyeY-eyeRy*1.35-droop} ${ex1+eyeRx+1},${eyeY-droop-3}" fill="${c.skin}"/>
+      ${sk==='f4'?`<ellipse cx="${ex1}" cy="${eyeY-eyeRy-1}" rx="${eyeRx*0.7}" ry="2" fill="rgba(0,0,0,.12)"/>`:''}
+      <ellipse cx="${ex2}" cy="${eyeY}"        rx="${eyeRx}"   ry="${eyeRy}"   fill="white"/>
+      <ellipse cx="${ex2}" cy="${eyeY+droop*0.3}" rx="${eyeRx*0.65}" ry="${eyeRy*0.82}" fill="${c.brow}"/>
+      <ellipse cx="${ex2}" cy="${eyeY+droop*0.3}" rx="${pupilR}"     ry="${pupilR*1.05}" fill="#111"/>
+      <ellipse cx="${ex2+2}" cy="${eyeY+droop*0.3-2}" rx="1.8" ry="1.8" fill="rgba(255,255,255,.82)"/>
+      <path d="M${ex2-eyeRx-1},${eyeY-droop-3} Q${ex2},${eyeY-eyeRy*1.35-droop} ${ex2+eyeRx+1},${eyeY-droop-3}" fill="${c.skin}"/>
+      ${sk==='f4'?`<ellipse cx="${ex2}" cy="${eyeY-eyeRy-1}" rx="${eyeRx*0.7}" ry="2" fill="rgba(0,0,0,.12)"/>`:''}
+      ${p.aged?`
+        <path d="M${ex1+eyeRx},${eyeY} Q${ex1+eyeRx+4},${eyeY+4} ${ex1+eyeRx+2},${eyeY+8}" stroke="rgba(0,0,0,.1)" stroke-width=".9" fill="none"/>
+        <path d="M${ex2-eyeRx},${eyeY} Q${ex2-eyeRx-4},${eyeY+4} ${ex2-eyeRx-2},${eyeY+8}" stroke="rgba(0,0,0,.1)" stroke-width=".9" fill="none"/>
+      `:''}`;
+  }
+
+  /* ── 입 ── */
+  function mouthShape(happy){
+    const mw = sk==='f3'?13 : sk==='f4'?14 : sk==='m1'?15 : 12;
+    if(happy) return `
+      <path d="M${cx-mw},${mouthY-2} Q${cx},${mouthY+13} ${cx+mw},${mouthY-2}" fill="${c.lip}"/>
+      <path d="M${cx-mw+2},${mouthY-1} Q${cx},${mouthY+5} ${cx+mw-2},${mouthY-1}" fill="rgba(255,255,255,.42)"/>`;
+    // 중년/남성은 입꼬리가 살짝 처짐
+    const droop = (p.aged||sk==='m1') ? 3 : 0;
+    return `<path d="M${cx-mw},${mouthY-droop} Q${cx},${mouthY+4} ${cx+mw},${mouthY-droop}" stroke="${c.lip}" stroke-width="${sk==='m1'?3:2.6}" fill="none" stroke-linecap="round"/>`;
+  }
+
+  /* ── 부작용 오버레이 ── */
+  let overlay='';
+  if(state==='tiger'){
+    const sy=eyeY+20, ey2=mouthY-6;
+    overlay=`
+      <g clip-path="url(#${clipId})">
+        <g opacity=".88">
+          <line x1="${cx-34}" y1="${sy}"   x2="${cx-12}" y2="${ey2}"   stroke="#C81010" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="${cx-34}" y1="${sy}"   x2="${cx-12}" y2="${ey2}"   stroke="rgba(255,160,160,.5)" stroke-width="1.1" stroke-linecap="round"/>
+          <line x1="${cx-28}" y1="${sy+1}" x2="${cx-7}"  y2="${ey2-1}" stroke="#C81010" stroke-width="2.0" stroke-linecap="round"/>
+          <line x1="${cx-22}" y1="${sy+2}" x2="${cx-2}"  y2="${ey2-2}" stroke="#C81010" stroke-width="1.3" stroke-linecap="round" opacity=".65"/>
+        </g>
+        <g opacity=".88">
+          <line x1="${cx+12}" y1="${sy}"   x2="${cx+34}" y2="${ey2}"   stroke="#C81010" stroke-width="2.8" stroke-linecap="round"/>
+          <line x1="${cx+12}" y1="${sy}"   x2="${cx+34}" y2="${ey2}"   stroke="rgba(255,160,160,.5)" stroke-width="1.1" stroke-linecap="round"/>
+          <line x1="${cx+7}"  y1="${sy+1}" x2="${cx+28}" y2="${ey2-1}" stroke="#C81010" stroke-width="2.0" stroke-linecap="round"/>
+          <line x1="${cx+2}"  y1="${sy+2}" x2="${cx+22}" y2="${ey2-2}" stroke="#C81010" stroke-width="1.3" stroke-linecap="round" opacity=".65"/>
+        </g>
+      </g>
+      <rect x="${cx-50}" y="${H-28}" width="100" height="20" rx="10" fill="#BB1111" opacity=".93"/>
+      <text x="${cx}" y="${H-14}" text-anchor="middle" font-size="10.5" fill="white" font-weight="900" font-family="Noto Sans KR">타이거마스크 발생!</text>`;
+  } else if(state==='burn'){
+    const by=eyeY+18;
+    overlay=`
+      <g clip-path="url(#${clipId})">
+        <ellipse cx="${cx-22}" cy="${by+8}"  rx="13" ry="8"   fill="rgba(180,45,5,.24)"/>
+        <ellipse cx="${cx-20}" cy="${by+14}" rx="9"  ry="5.5" fill="rgba(200,60,10,.20)"/>
+        <ellipse cx="${cx+20}" cy="${by+6}"  rx="12" ry="7.5" fill="rgba(180,45,5,.20)"/>
+        <ellipse cx="${cx+18}" cy="${by+13}" rx="8"  ry="5"   fill="rgba(200,60,10,.17)"/>
+        <circle cx="${cx-24}" cy="${by+4}"  r="2.8" fill="rgba(255,130,50,.55)"/>
+        <circle cx="${cx-14}" cy="${by+18}" r="2.2" fill="rgba(255,130,50,.48)"/>
+        <circle cx="${cx+22}" cy="${by+2}"  r="2.5" fill="rgba(255,130,50,.50)"/>
+        <circle cx="${cx+12}" cy="${by+20}" r="1.8" fill="rgba(255,130,50,.42)"/>
+      </g>
+      <rect x="${cx-44}" y="${H-28}" width="88" height="20" rx="10" fill="#B83C10" opacity=".93"/>
+      <text x="${cx}" y="${H-14}" text-anchor="middle" font-size="10.5" fill="white" font-weight="900" font-family="Noto Sans KR">화상 흔적 발생!</text>`;
+  } else if(state==='happy'){
+    overlay=`
+      <ellipse cx="${cx-30}" cy="${eyeY+18}" rx="15" ry="9" fill="rgba(255,120,120,.28)"/>
+      <ellipse cx="${cx+30}" cy="${eyeY+18}" rx="15" ry="9" fill="rgba(255,120,120,.28)"/>
+      <ellipse cx="${cx-8}"  cy="${fcy-44}" rx="3.5" ry="3.5" fill="#FFD440" opacity=".8"/>
+      <ellipse cx="${cx+16}" cy="${fcy-50}" rx="2.5" ry="2.5" fill="#FF7BAC" opacity=".7"/>
+      <ellipse cx="${cx+32}" cy="${fcy-38}" rx="2"   ry="2"   fill="#4ECFA8" opacity=".8"/>`;
+  }
+
+  const eyes   = eyePair(state==='happy');
+  const mouth_ = mouthShape(state==='happy');
+
+  el.innerHTML = defs + hBack + ears + faceShape + hFront + brows + blush + nose + wrinkles + eyes + mouth_ + overlay;
+}
+
+/* ── 게임 상태 ──
+   목표: 100만원 / 손님 5명 = 1 DAY / 2~3 DAY 클리어 목표
+   정품 순수익: fee-20,000 → 5명×~65,000 ≈ 325,000/DAY → 3DAY=975,000
+   불법 순수익: fee-8,000 → 조금 더 높지만 리스크 급등
+   불법 리스크: 1회=20%, 2회=38%, 3회=56%, 4회=74% (빠르게 상승)
+   부작용 배상: fee×2~3배
+*/
+const GOAL=1000000;
+let G={};
+function initG(){
+  G={money:0,rep:60,day:1,illUse:0,cart:null,sel:null,queue:[],done:new Set(),pend:null};
+  genQ();
+}
+function genQ(){
+  G.queue=[...PT].sort(()=>Math.random()-.5).slice(0,5);
+  G.done=new Set(); G.sel=null; G.cart=null;
+}
+function illRisk(){return Math.min(80,20+G.illUse*18);}
+function fmt(n){const a=Math.abs(Math.round(n));return (n<0?'-':'')+a.toLocaleString('ko-KR')+'원';}
+
+function render(){
+  document.getElementById('hd-d').textContent=G.day;
+  document.getElementById('hd-m').textContent=fmt(G.money);
+  document.getElementById('hd-r').textContent=G.rep+'점';
+  const mp=Math.min(100,Math.max(0,(G.money/GOAL)*100));
+  const rp=Math.min(100,Math.max(0,G.rep));
+  document.getElementById('gf-m').style.width=mp+'%';
+  document.getElementById('gf-r').style.width=rp+'%';
+  document.getElementById('gl-m').textContent=G.money.toLocaleString()+' / '+GOAL.toLocaleString()+'원';
+  document.getElementById('gl-r').textContent=G.rep+' / 100점';
+  const risk=illRisk();
+  document.getElementById('ill-sub').textContent=`원가 8,000 · 위험 ${risk}%`;
+  const wb=document.getElementById('warn-banner');
+  if(G.illUse>0){
+    wb.style.display='flex';
+    document.getElementById('warn-txt').textContent=`불법 카트리지 ${G.illUse}회 누적 — 현재 부작용 확률 ${risk}%! 사용할수록 위험이 커져요.`;
+  } else wb.style.display='none';
+
+  const lf=document.getElementById('lf-svg');
+  const li=document.getElementById('left-info');
+  if(G.sel){
+    drawFace(lf,G.sel.sk,'normal');
+    li.innerHTML=`<div class="pname">${G.sel.name}${G.sel.vip?' ⭐':''}</div><div class="ptag">${G.sel.concern}</div><div class="pfee">${fmt(G.sel.fee)}</div>`;
+  } else {
+    lf.innerHTML=''; li.innerHTML='<div class="ehint">손님을 선택하세요</div>';
+  }
+  document.getElementById('btn-gen').classList.toggle('on',G.cart==='genuine');
+  document.getElementById('btn-ill').classList.toggle('on',G.cart==='illegal');
+  const dl=document.getElementById('dev-lbl');
+  dl.textContent=G.cart==='genuine'?'정품':G.cart==='illegal'?'불법':'미선택';
+  dl.style.fill=G.cart==='genuine'?'#1A6A4A':G.cart==='illegal'?'#BB2222':'#C8A0D0';
+  const gb=document.getElementById('go-btn');
+  if(G.sel&&G.cart){gb.disabled=false;gb.textContent='💉 시술 시작!';}
+  else if(!G.sel){gb.disabled=true;gb.textContent='손님을 선택하세요';}
+  else{gb.disabled=true;gb.textContent='카트리지를 선택하세요';}
+  renderQ();
+}
+
+function renderQ(){
+  const row=document.getElementById('queue-row');
+  row.innerHTML='';
+  const EMOJ={f1:'👩',f2:'👩‍🦳',f3:'👩‍🦰',f4:'👧',m1:'🧑'};
+  G.queue.forEach(p=>{
+    const d=document.createElement('div');
+    d.className='qc'+(G.sel?.id===p.id?' on':'')+(G.done.has(p.id)?' done':'');
+    d.innerHTML=(p.vip?'<div class="qvip">VIP</div>':'')+
+      `<div class="qface">${EMOJ[p.sk]||'👤'}</div><div class="qname">${p.name}</div><div class="qcon">${p.concern}</div>`;
+    d.onclick=()=>{if(!G.done.has(p.id)){G.sel=p;G.cart=null;hideRight();render();}};
+    row.appendChild(d);
+  });
+}
+
+function pickCart(t){if(!G.sel)return;G.cart=t;render();}
+
+/* ── 밸런스 설계 ──
+   정품: fee - 20,000 → 손님 1명당 ~65,000 → 5명 = ~325,000/DAY → 2DAY=~650,000 → 3DAY 클리어
+   불법: fee - 8,000  → 손님 1명당 ~85,000 (1.5배) → 운 좋으면 1.5DAY 클리어
+   불법 리스크: 1회=20%, 2회=38%, 3회=56%, 4회=74% → 연속 사용시 급등
+   부작용 배상: fee×3(일반), fee×4(VIP) → VIP 1번 실패시 -360,000~480,000원 타격
+   파산 기준: 누적 수익 -150,000원 이하
+*/
+
+function doTreat(){
+  if(!G.sel||!G.cart)return;
+  const p=G.sel, gen=G.cart==='genuine';
+  let ok, mD, rD, fst, eff;
+
+  if(gen){
+    ok=true;
+    mD=p.fee-20000;
+    rD=p.vip?6:3;
+    fst='happy';
+    eff='완벽한 리프팅! ✨';
+  } else {
+    G.illUse++;
+    ok=(Math.random()*100)>illRisk();
+    if(ok){
+      mD=p.fee-8000;   // 불법 성공: 정품보다 약 1.5배 수익
+      rD=1;
+      fst='happy';
+      eff='이번엔 다행히... ⚠️';
+    } else {
+      fst=Math.random()<0.5?'tiger':'burn';
+      mD=-(p.fee*(p.vip?4:3));
+      rD=p.vip?-35:-22;
+      eff=fst==='tiger'?'타이거마스크 발생! 😰':'화상 흔적 발생! 🔥';
+    }
+  }
+
+  G.money+=mD;
+  G.rep=Math.max(0,Math.min(100,G.rep+rD));
+  G.done.add(p.id);
+  G.sel=null;
+  G.cart=null;
+
+  // 오른쪽 결과 얼굴
+  const rf=document.getElementById('rf-svg');
+  drawFace(rf,p.sk,fst);
+  document.getElementById('right-panel').style.opacity='1';
+  document.getElementById('right-info').innerHTML=
+    `<div class="pname" style="color:${ok?'var(--mint)':'var(--red)'}">${ok?'✅ 성공':'❌ 부작용'}</div>
+     <div class="ptag" style="background:${ok?'var(--mint-l)':'var(--red-l)'};color:${ok?'#1A6A50':'var(--red)'}">${eff}</div>`;
+
+  addLog(ok
+    ?`✅ ${p.name}님 성공 +${fmt(mD)}, 평판 +${rD}`
+    :`❌ ${p.name}님 부작용! ${fmt(mD)}, 평판 ${rD}`,
+    ok?'ok':'bad');
+
+  // 결과 모달 내용 세팅 — 얼굴 SVG를 모달에도 표시
+  let desc='';
+  if(ok&&gen)            desc=`${p.name}님이 환하게 웃으며 돌아갔어요!\n정품 카트리지 덕분에 완벽한 리프팅 효과가 나타났습니다.`;
+  else if(ok&&!gen)      desc=`이번엔 다행히 괜찮았지만…\n지금 부작용 확률이 ${illRisk()}%까지 올라왔어요.\n계속 사용하면 위험합니다!`;
+  else if(fst==='tiger') desc=`불법 카트리지의 불안정한 에너지가\n피부를 긁으며 볼에 타이거마스크 흉터를 남겼습니다.\n${p.name}님이 매우 화가 났어요.`;
+  else                   desc=`불법 카트리지 과열로 ${p.name}님의\n피부에 화상 흔적이 생겼습니다.\n배상금을 지급하고 평판이 크게 떨어졌어요.`;
+
+  // 모달 얼굴 SVG
+  const rfw=document.getElementById('r-face-wrap');
+  rfw.innerHTML='<svg width="110" height="125" viewBox="0 0 150 170" id="modal-face-svg"></svg>';
+  drawFace(document.getElementById('modal-face-svg'), p.sk, fst);
+
+  document.getElementById('r-ttl').textContent=ok?'시술 성공!':'부작용 발생!';
+  document.getElementById('r-ttl').style.color=ok?'#0A7050':'#B02020';
+  document.getElementById('r-dsc').textContent=desc;
+  document.getElementById('r-chips').innerHTML=
+    `<span class="cp ${mD>=0?'cpp':'cpn'}">${mD>=0?'+':''}${fmt(mD)}</span>
+     <span class="cp ${rD>=0?'cpp':'cpn'}">평판 ${rD>=0?'+':''}${rD}점</span>`;
+
+  render();
+
+  const endType=getEndType();
+  document._pendingEnd = endType || null;
+  document.getElementById('r-ov').classList.add('show');
+}
+
+function getEndType(){
+  if(G.money>=GOAL)    return 'win';
+  if(G.rep<=0)         return 'rep';
+  if(G.money<=-150000) return 'broke';
+  return null;
+}
+
+function hideRight(){
+  document.getElementById('right-panel').style.opacity='.3';
+  document.getElementById('rf-svg').innerHTML='';
+  document.getElementById('right-info').innerHTML='<div class="ehint">시술 후<br>결과가 여기 표시됩니다</div>';
+}
+
+function closeResult(){
+  document.getElementById('r-ov').classList.remove('show');
+  if(document._pendingEnd){
+    const t=document._pendingEnd;
+    document._pendingEnd=null;
+    setTimeout(()=>showEnd(t),250);
+    return;
+  }
+  if(G.queue.every(p=>G.done.has(p.id))){
+    G.day++;
+    setTimeout(()=>{
+      genQ(); render();
+      addLog(`☀️ DAY ${G.day} 시작! 새로운 손님 5명이 도착했어요.`,'warn');
+    },300);
+  }
+}
+
+function showEnd(t){
+  const titles={win:'🏆 최우수 클리닉 달성!', rep:'😢 폐업...', broke:'💸 파산...'};
+  const descs={
+    win:  `누적 수익 ${G.money.toLocaleString()}원 달성!\n\n정품 카트리지를 사용한 덕분에\n환자들의 신뢰를 쌓아 최우수 클리닉이 되었습니다.\n\n안전한 시술이 클리닉의 미래를 만듭니다. ✨`,
+    rep:  `불법 카트리지 부작용 사례가 SNS에 퍼지며\n클리닉 평판이 0점이 되었습니다.\n\n타이거마스크·화상 피해 후기가 확산되어 폐업하게 됐어요.\n\n정품 카트리지만이 환자와 클리닉을 지킵니다.`,
+    broke:`부작용 배상금이 쌓여 파산했습니다.\n불법 카트리지로 아낀 원가보다\n훨씬 큰 손실이 생겼어요.\n\n정품 사용이 장기적으로 훨씬 이득입니다.`,
+  };
+  // 엔딩 모달 얼굴: 승리=happy 랜덤, 게임오버=burn/tiger 랜덤
+  const efw=document.getElementById('e-face-wrap');
+  const endSk=['f1','f2','f3','f4','m1'][Math.floor(Math.random()*5)];
+  const endState=t==='win'?'happy':(Math.random()<.5?'tiger':'burn');
+  efw.innerHTML='<svg width="110" height="125" viewBox="0 0 150 170" id="end-face-svg"></svg>';
+  drawFace(document.getElementById('end-face-svg'), endSk, endState);
+
+  document.getElementById('e-ttl').textContent=titles[t];
+  document.getElementById('e-ttl').style.color=t==='win'?'#8B6000':'#B02020';
+  document.getElementById('e-dsc').textContent=descs[t];
+  document.getElementById('e-btn').className='mbtn'+(t==='win'?' gold':'');
+  document.getElementById('e-ov').classList.add('show');
+}
+
+function restart(){
+  document._pendingEnd=null;
+  document.getElementById('e-ov').classList.remove('show');
+  document.getElementById('r-ov').classList.remove('show');
+  document.getElementById('log-box').innerHTML='';
+  hideRight();
+  initG(); render();
+  addLog('클리닉 문을 열었습니다! 오늘도 최선을 다해봐요 💪');
+}
+function addLog(t,cls=''){
+  const b=document.getElementById('log-box');
+  const d=document.createElement('div');
+  d.className='log '+cls+' fadein';d.textContent=t;
+  b.prepend(d);
+  while(b.children.length>4)b.removeChild(b.lastChild);
+}
+
+initG();render();
+addLog('클리닉 문을 열었습니다! 오늘도 최선을 다해봐요 💪');
+</script>
+</body>
+</html>
