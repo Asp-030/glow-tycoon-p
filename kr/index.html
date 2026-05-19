@@ -747,8 +747,9 @@ function doTreat(){
     fst='happy';
     eff='완벽한 리프팅! ✨';
   } else {
+    const currentRisk = illRisk(); // UI에 표시된 현재 위험도를 먼저 저장
     G.illUse++;
-    ok=(Math.random()*100)>illRisk();
+    ok=(Math.random()*100)>currentRisk; // 화면에 고지된 확률로 공정하게 판정
     if(ok){
       mD=p.fee-8000;
       rD=1;
@@ -835,6 +836,7 @@ function closeResult(){
   if(G.queue.every(p=>G.done.has(p.id))){
     G.day++;
     setTimeout(()=>{
+      hideRight(); // 👈 새로운 날이 시작될 때 우측 결과 모니터 초기화
       genQ(); render();
       addLog(`☀️ STAGE ${G.day} 시작! 새로운 손님들이 도착했습니다.`,'warn');
     },300);
