@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GLOW 클리닉 타이쿤</title>
+<!-- 팝한 게임 느낌을 위해 폰트 추가 (영문/숫자용 코믹 폰트 + 한글 두꺼운 고딕) -->
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Noto+Sans+KR:wght@700;900&display=swap" rel="stylesheet">
+<style>
+/* ── 타이쿤 게임 변수 ── */
+:root {
+  --deep: #2F1B35;     /* 게임 특유의 짙은 네이비/퍼플 외곽선 */
+  --pk: #FF5E9C;       /* 메인 핑크 */
+  --pkd: #D83C7B;
+  --pkl: #FFCBE0;
+  --mn: #25D3A5;       /* 민트 (정품/성공) */
+  --mnd: #199F7B;
+  --mnl: #B9F6E3;
+  --yw: #FFCE2E;       /* 옐로우 (경고/포인트) */
+  --ywd: #D3A200;
+  --rd: #FF4D5B;       /* 레드 (불법/실패) */
+  --rdd: #CC2B38;
+  --bg: #FFE5F1;
+  --panel: #FFFFFF;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  width: 100%; min-height: 100vh;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: var(--deep);
+  /* 게임 바닥/벽지 느낌의 도트 패턴 배경 */
+  background-color: var(--bg);
+  background-image: radial-gradient(var(--pkl) 20%, transparent 20%), radial-gradient(var(--pkl) 20%, transparent 20%);
+  background-size: 30px 30px;
+  background-position: 0 0, 15px 15px;
+  user-select: none;
+}
+
+/* 폰트 혼용 클래스 */
+.game-font { font-family: 'Fredoka', 'Noto Sans KR', sans-serif; }
+
+/* ── 상단 HUD 바 (게임 스테이터스) ── */
+#hud {
+  padding: 16px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 200;
+  max-width: 800px; margin: 0 auto;
+}
+.logo {
+  font-size: 26px; font-weight: 900; color: #fff;
+  text-shadow: 3px 3px 0 var(--deep), -1px -1px 0 var(--deep), 1px -1px 0 var(--deep), -1px 1px 0 var(--deep), 1px 1px 0 var(--deep);
+  transform: rotate(-3deg);
+  animation: float 2s ease-in-out infinite;
+}
+.logo em { color: var(--yw); font-style: normal; }
+
+.hud-right { display: flex; gap: 12px; }
+
+/* 상태 뱃지 (돈, 평판 등) */
+.hstat {
+  background: var(--panel);
+  border: 3px solid var(--deep);
+  border-radius: 20px; padding: 6px 14px;
+  display: flex; align-items: center; gap: 6px;
+  box-shadow: 0 5px 0 var(--deep);
+  font-weight: 900;
+  transform: translateY(0);
+}
+.hstat.day-stat { background: var(--yw); }
+.hstat .label { font-size: 14px; display: block; line-height: 1; }
+.hstat .val { font-size: 18px; line-height: 1; color: var(--deep); font-family: 'Fredoka', sans-serif;}
+
+/* ── 목표 게이지 바 ── */
+#goalbar {
+  background: var(--deep);
+  border-radius: 20px;
+  padding: 12px 20px;
+  display: flex; gap: 20px;
+  max-width: 760px; margin: 0 auto 16px;
+  box-shadow: 0 6px 0 rgba(0,0,0,0.15);
+  position: sticky; top: 70px; z-index: 199;
+}
+.gi { flex: 1; }
+.gi-lbl {
+  font-size: 12px; font-weight: 900; color: #fff;
+  display: flex; justify-content: space-between; margin-bottom: 6px;
+}
+.gi-track {
+  height: 16px; background: #563360; border-radius: 10px;
+  border: 2px solid #23122A;
+  overflow: hidden; position: relative;
+}
+.gi-fill {
+  height: 100%; border-radius: 8px;
+  transition: width 0.5s cubic-bezier(.34,1.2,.64,1);
+  position: relative; overflow: hidden;
+}
+/* 게이지 반짝임 효과 */
+.gi-fill::after {
+  content:''; position: absolute; top:0; left:0; right:0; bottom:0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: shine 2s infinite;
+}
+.gi-fill.m { background: linear-gradient(180deg, #FFE47A, var(--yw)); }
+.gi-fill.r { background: linear-gradient(180deg, #7AFFE0, var(--mn)); }
+
+/* ── 메인 ── */
+#main { max-width: 760px; margin: 0 auto; padding: 0 14px 80px; }
+
+/* ── 시술 씬 ── */
+#scene {
+  display: grid;
+  grid-template-columns: 1fr 140px 1fr;
+  gap: 16px; align-items: stretch;
+  margin-bottom: 20px;
+}
+
+/* 게임 카드/아케이드 머신 스타일 패널 */
+.face-panel {
+  background: var(--panel);
+  border-radius: 24px;
+  border: 4px solid var(--deep);
+  box-shadow: 0 8px 0 var(--deep), 0 12px 24px rgba(47,27,53,.2);
+  padding: 16px 12px;
+  text-align: center;
+  position: relative;
+}
+.fp-title {
+  display: inline-block;
+  background: var(--deep); color: #fff;
+  font-size: 12px; font-weight: 900;
+  padding: 6px 16px; border-radius: 16px;
+  position: absolute; top: -16px; left: 50%; transform: translateX(-50%);
+  box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+}
+
+/* 스포트라이트 배경 */
+.face-box {
+  display: flex; justify-content: center; margin: 16px 0 12px;
+  background: radial-gradient(circle, var(--pkl) 30%, transparent 70%);
+  border-radius: 50%;
+}
+.pname { font-size: 18px; font-weight: 900; color: var(--deep); }
+.ptag {
+  display: inline-block;
+  background: var(--pk); color: #fff; border: 2px solid var(--deep);
+  font-size: 11px; font-weight: 900;
+  padding: 4px 12px; border-radius: 20px;
+  margin-top: 6px;
+}
+.pfee {
+  font-size: 16px; font-weight: 900; color: var(--deep);
+  margin-top: 6px;
+  background: var(--yw); border: 2px solid var(--deep);
+  border-radius: 12px; padding: 4px 12px; display: inline-block;
+  font-family: 'Fredoka', sans-serif;
+  box-shadow: 0 3px 0 rgba(0,0,0,0.1);
+}
+.ehint { font-size: 13px; font-weight: 700; color: #9A7B9F; padding: 30px 0; line-height: 1.6; }
+
+/* ── 중앙 패널 (조작부) ── */
+#mid-col { display: flex; flex-direction: column; align-items: center; gap: 12px; padding-top: 10px;}
+
+/* 기기 박스 - 타이쿤 아이템 룩 */
+.dev-box {
+  width: 110px; height: 110px;
+  background: #F1DEFA;
+  border: 4px solid var(--deep);
+  border-radius: 24px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 6px 0 var(--deep), inset 0 4px 0 rgba(255,255,255,0.5);
+  animation: float 3s ease-in-out infinite;
+}
+
+/* 카트리지 버튼 (3D 게임 버튼) */
+.cbt {
+  width: 136px; padding: 10px 8px;
+  border: 3px solid var(--deep); border-radius: 16px;
+  font-family: 'Noto Sans KR', sans-serif; font-size: 13px; font-weight: 900;
+  cursor: pointer; text-align: center;
+  transition: all 0.1s;
+  position: relative;
+}
+.cbt.gen { background: #D9FFF2; color: var(--mnd); box-shadow: 0 6px 0 var(--mnd); }
+.cbt.gen:hover { filter: brightness(1.1); }
+.cbt.gen:active, .cbt.gen.on {
+  transform: translateY(6px); box-shadow: 0 0px 0 var(--mnd);
+  background: var(--mn); color: #fff;
+}
+.cbt.ill { background: #FFE8EC; color: var(--rdd); box-shadow: 0 6px 0 var(--rdd); }
+.cbt.ill:hover { filter: brightness(1.1); }
+.cbt.ill:active, .cbt.ill.on {
+  transform: translateY(6px); box-shadow: 0 0px 0 var(--rdd);
+  background: var(--rd); color: #fff;
+}
+.cbt-sub { font-size: 10px; font-weight: 700; margin-top: 4px; opacity: 0.8; font-family: 'Fredoka', sans-serif;}
+
+/* 메인 액션 버튼 */
+#go-btn {
+  width: 136px; padding: 16px 0; margin-top: 4px;
+  background: var(--pk); color: #fff;
+  border: 4px solid var(--deep); border-radius: 18px;
+  font-family: 'Noto Sans KR', sans-serif; font-size: 16px; font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 8px 0 var(--deep), inset 0 4px 0 rgba(255,255,255,0.3);
+  transition: all 0.1s;
+  text-shadow: 1px 1px 0 var(--deep);
+}
+#go-btn:hover:not(:disabled) { background: #FF7FA9; }
+#go-btn:active:not(:disabled) {
+  transform: translateY(8px); box-shadow: 0 0px 0 var(--deep);
+}
+#go-btn:disabled {
+  background: #C4B5C8; color: #7F7383; border-color: #7F7383;
+  box-shadow: 0 4px 0 #7F7383; cursor: not-allowed; text-shadow: none;
+  transform: translateY(4px);
+}
+
+/* ── 대기줄 (손님 대기석) ── */
+#queue-wrap {
+  background: var(--mn);
+  border: 4px solid var(--deep);
+  border-radius: 24px;
+  padding: 16px;
+  box-shadow: 0 8px 0 var(--mnd);
+  margin-bottom: 20px;
+}
+.queue-title {
+  font-size: 14px; font-weight: 900; color: var(--deep);
+  margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+  background: #fff; padding: 4px 12px; border-radius: 12px; border: 2px solid var(--deep);
+  display: inline-flex;
+}
+#queue-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;}
+
+/* 손님 카드 (캐릭터 슬롯) */
+.qc {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  background: #fff; border: 3px solid var(--deep); border-radius: 18px;
+  padding: 8px 10px; cursor: pointer; position: relative;
+  transition: all 0.15s; min-width: 80px;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.15);
+}
+.qc:hover { filter: brightness(0.95); transform: translateY(-2px); }
+.qc.on {
+  background: var(--yw); transform: translateY(-6px);
+  box-shadow: 0 6px 0 var(--ywd), 0 0 0 4px rgba(255,206,46,0.4);
+}
+.qc.done { opacity: 0.4; filter: grayscale(1); pointer-events: none; box-shadow: none; transform: translateY(0);}
+
+.qvip {
+  position: absolute; top: -10px; right: -8px;
+  background: var(--yw); color: var(--deep);
+  border: 2px solid var(--deep);
+  font-size: 10px; font-weight: 900; font-family: 'Fredoka', sans-serif;
+  padding: 3px 8px; border-radius: 10px;
+  box-shadow: 0 3px 0 var(--ywd);
+  animation: bounce 1s infinite;
+}
+.qface { font-size: 32px; line-height: 1; }
+.qname { font-size: 11px; font-weight: 900; color: var(--deep); }
+.qcon { font-size: 10px; color: #666; font-weight: 700; background: #eee; padding: 2px 6px; border-radius: 6px;}
+
+/* ── 위험 배너 (싸이렌) ── */
+#warn-banner {
+  background: var(--yw);
+  border: 3px solid var(--deep); border-radius: 16px;
+  padding: 12px 16px; font-size: 13px; color: var(--deep); font-weight: 900;
+  display: none; align-items: center; gap: 10px; margin-bottom: 16px;
+  box-shadow: 0 4px 0 var(--ywd);
+  animation: siren 1s infinite alternate;
+}
+
+/* ── 로그 (메시지 보드) ── */
+#log-box { display: flex; flex-direction: column; gap: 8px; }
+.log {
+  font-size: 13px; font-weight: 900;
+  padding: 10px 14px; border-radius: 14px;
+  border: 3px solid var(--deep);
+  background: var(--panel);
+  color: var(--deep);
+  box-shadow: 0 3px 0 rgba(0,0,0,0.1);
+}
+.log.ok { background: var(--mnl); }
+.log.bad { background: #FFE8EC; color: var(--rdd); }
+.log.warn { background: #FFF3C4; }
+
+/* ── 결과/엔딩 모달 (게임 클리어 느낌) ── */
+.ov {
+  position: fixed; inset: 0;
+  background: rgba(47,27,53, 0.7); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 500; opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.ov.show { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--panel);
+  border-radius: 32px;
+  border: 5px solid var(--deep);
+  padding: 30px 24px; max-width: 400px; width: 92%;
+  text-align: center;
+  transform: scale(0.7) translateY(50px);
+  transition: transform 0.3s cubic-bezier(.34,1.5,.64,1);
+  box-shadow: 0 15px 0 var(--deep), 0 20px 60px rgba(0,0,0,0.5);
+  position: relative;
+}
+.ov.show .modal { transform: scale(1) translateY(0); }
+.m-face-wrap { display: flex; justify-content: center; margin-bottom: 16px; }
+
+/* 별/파티클 장식 */
+.m-deco {
+  position: absolute; font-size: 30px; animation: bounce 1.5s infinite alternate;
+}
+
+.m-ttl {
+  font-size: 28px; font-weight: 900; margin-bottom: 12px;
+  text-shadow: 2px 2px 0 var(--deep); color: #fff;
+}
+.m-dsc {
+  font-size: 14px; color: var(--deep); line-height: 1.6; font-weight: 700;
+  white-space: pre-line; margin-bottom: 20px;
+  background: #F1DEFA; border: 2px solid var(--deep); border-radius: 16px; padding: 14px;
+}
+.m-chips { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 24px; }
+.cp {
+  font-size: 14px; font-weight: 900; padding: 6px 16px; border-radius: 20px;
+  border: 2px solid var(--deep); font-family: 'Fredoka', sans-serif;
+}
+.cpp { background: var(--mn); color: #fff; box-shadow: 0 3px 0 var(--mnd); }
+.cpn { background: var(--rd); color: #fff; box-shadow: 0 3px 0 var(--rdd); }
+
+.mbtn {
+  background: var(--pk); color: #fff;
+  border: 4px solid var(--deep); border-radius: 18px;
+  padding: 14px 40px; font-size: 18px; font-weight: 900;
+  cursor: pointer; box-shadow: 0 6px 0 var(--deep);
+  transition: all 0.1s; text-shadow: 1px 1px 0 var(--deep);
+}
+.mbtn:active { transform: translateY(6px); box-shadow: 0 0px 0 var(--deep); }
+.mbtn.gold { background: var(--yw); color: var(--deep); text-shadow: none; }
+
+/* ── 애니메이션 & 특수 효과 ── */
+@keyframes fadein { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+@keyframes shine { 0%{left:-100%} 100%{left:100%} }
+@keyframes siren { 0%{background:var(--yw);} 100%{background:#FF6B6B; color:#fff; border-color:#800;} }
+@keyframes popUp { 0%{transform:scale(0.5);opacity:0;} 80%{transform:scale(1.2);opacity:1;} 100%{transform:scale(1);opacity:0;} }
+
+.fadein { animation: fadein 0.3s ease forwards; }
+
+/* 플로팅 텍스트 이펙트 */
+.floating-txt {
+  position: absolute;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 24px; font-weight: 900;
+  pointer-events: none; z-index: 1000;
+  text-shadow: 2px 2px 0 var(--deep), -2px -2px 0 var(--deep), 2px -2px 0 var(--deep), -2px 2px 0 var(--deep);
+  animation: floatUp 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+.f-good { color: var(--mn); }
+.f-bad { color: var(--rd); }
+@keyframes floatUp {
+  0% { transform: translateY(0) scale(0.5); opacity: 0; }
+  20% { transform: translateY(-20px) scale(1.2); opacity: 1; }
+  80% { transform: translateY(-60px) scale(1); opacity: 1; }
+  100% { transform: translateY(-80px) scale(0.8); opacity: 0; }
+}
+
+#right-panel { transition: opacity 0.3s, filter 0.3s; }
+.panel-disabled { opacity: 0.5; filter: grayscale(0.5); }
+</style>
+</head>
+<body>
+
+<!-- ── HUD (게임 상단 상태바) ── -->
+<div id="hud">
+  <div class="logo">✨<em>GLOW</em><br>TYCOON</div>
+  <div class="hud-right">
+    <div class="hstat day-stat" title="현재일차">
+      <span class="label">DAY</span>
+      <span class="val" id="hd-d">1</span>
+    </div>
+    <div class="hstat" title="수익">
+      <span class="label">💰</span>
+      <span class="val" id="hd-m">0</span>
+    </div>
+    <div class="hstat" title="평판">
+      <span class="label">⭐</span>
+      <span class="val" id="hd-r">60</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── 목표 게이지 ── -->
+<div id="goalbar">
+  <div class="gi">
+    <div class="gi-lbl">
+      <span>💰 목표 수익</span>
+      <span id="gl-m" class="game-font">0 / 1,000,000</span>
+    </div>
+    <div class="gi-track"><div class="gi-fill m" id="gf-m" style="width:0%"></div></div>
+  </div>
+  <div class="gi">
+    <div class="gi-lbl">
+      <span>⭐ 클리닉 평판</span>
+      <span id="gl-r" class="game-font">60 / 100</span>
+    </div>
+    <div class="gi-track"><div class="gi-fill r" id="gf-r" style="width:60%"></div></div>
+  </div>
+</div>
+
+<!-- ── 메인 게임 영역 ── -->
+<div id="main">
+
+  <!-- 시술 씬 -->
+  <div id="scene">
+    <!-- 왼쪽: 현재 손님 -->
+    <div class="face-panel" id="left-panel">
+      <div class="fp-title">👤 현재 손님</div>
+      <div class="face-box">
+        <svg id="lf-svg" width="130" height="150" viewBox="0 0 150 170"></svg>
+      </div>
+      <div id="left-info">
+        <div class="ehint">대기열에서<br>손님을 선택하세요 👇</div>
+      </div>
+    </div>
+
+    <!-- 중앙: 조작부 (아이템 & 시술버튼) -->
+    <div id="mid-col">
+      <!-- 기기 아이콘 -->
+      <div class="dev-box">
+        <svg width="84" height="84" viewBox="0 0 84 84">
+          <!-- 기기 본체 통통하게 -->
+          <rect x="20" y="8" width="44" height="56" rx="12" fill="#EAD0F8" stroke="var(--deep)" stroke-width="3"/>
+          <rect x="28" y="16" width="28" height="20" rx="6" fill="#FFF" stroke="var(--deep)" stroke-width="2"/>
+          <circle cx="34" cy="46" r="5" fill="var(--pk)" stroke="var(--deep)" stroke-width="2"/>
+          <circle cx="50" cy="46" r="5" fill="var(--mn)" stroke="var(--deep)" stroke-width="2"/>
+          <!-- 손잡이 및 팁 -->
+          <rect x="38" y="64" width="8" height="12" rx="3" fill="#DDB8F0" stroke="var(--deep)" stroke-width="2"/>
+          <circle cx="42" cy="78" r="6" fill="#FFF" stroke="var(--deep)" stroke-width="2"/>
+          <circle cx="42" cy="78" r="3" fill="var(--pk)" id="dev-dot"/>
+          <!-- 화면 안 표시기 -->
+          <path d="M 32 26 L 38 20 L 44 26" fill="none" stroke="var(--pk)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+
+      <!-- 카트리지 선택 아이템 슬롯 -->
+      <button class="cbt gen" id="btn-gen" onclick="pickCart('genuine')">
+        ✨ 정품 카트리지
+        <div class="cbt-sub">비용 -20,000 / 안전</div>
+      </button>
+      <button class="cbt ill" id="btn-ill" onclick="pickCart('illegal')">
+        🧨 불법 카트리지
+        <div class="cbt-sub" id="ill-sub">비용 -8,000 / 위험 20%</div>
+      </button>
+
+      <!-- 시술 시작 버튼 -->
+      <button id="go-btn" disabled onclick="doTreat()">시술 시작!</button>
+    </div>
+
+    <!-- 오른쪽: 결과 -->
+    <div class="face-panel panel-disabled" id="right-panel">
+      <div class="fp-title">✨ 시술 결과</div>
+      <div class="face-box" style="background: radial-gradient(circle, #EAEAEA 30%, transparent 70%);">
+        <svg id="rf-svg" width="130" height="150" viewBox="0 0 150 170"></svg>
+      </div>
+      <div id="right-info">
+        <div class="ehint">시술 후<br>결과가 표시됩니다</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 대기줄 -->
+  <div id="queue-wrap">
+    <div class="queue-title">👥 대기 손님 <span style="font-size:11px; font-weight:normal; color:#666;">클릭해서 호출하세요!</span></div>
+    <div id="queue-row"></div>
+  </div>
+
+  <!-- 위험 배너 (싸이렌) -->
+  <div id="warn-banner">🚨 <span id="warn-txt"></span></div>
+
+  <!-- 로그 보드 -->
+  <div id="log-box"></div>
+</div>
+
+<!-- ── 결과 모달 (스테이지 클리어 느낌) ── -->
+<div class="ov" id="r-ov">
+  <div class="modal">
+    <div class="m-deco" style="top:-15px; left:10px;">✨</div>
+    <div class="m-deco" style="top:-15px; right:10px;">✨</div>
+    <div class="m-face-wrap" id="r-face-wrap"></div>
+    <div class="m-ttl" id="r-ttl" style="background:var(--mn); padding:5px; border-radius:12px; border:3px solid var(--deep);">SUCCESS!</div>
+    <div class="m-dsc" id="r-dsc"></div>
+    <div class="m-chips" id="r-chips"></div>
+    <button class="mbtn" onclick="closeResult()">확인</button>
+  </div>
+</div>
+
+<!-- ── 엔딩 모달 (게임 오버 / 엔딩) ── -->
+<div class="ov" id="e-ov">
+  <div class="modal">
+    <div class="m-face-wrap" id="e-face-wrap"></div>
+    <div class="m-ttl" id="e-ttl" style="color:var(--yw);"></div>
+    <div class="m-dsc" id="e-dsc"></div>
+    <button class="mbtn" id="e-btn" onclick="restart()">다시 플레이하기 🎮</button>
+  </div>
+</div>
+
+<script>
+// --- 기존 손님 데이터 및 스킨 정보 유지 ---
+const PT=[
+  {id:1,name:'김지영',concern:'볼 처짐',    fee:110000,sk:'f1'},
+  {id:2,name:'박미숙',concern:'목 주름',    fee:140000,sk:'f2',vip:1},
+  {id:3,name:'이수진',concern:'턱선 리프팅',fee:120000,sk:'f3'},
+  {id:4,name:'최하은',concern:'눈가 탄력',  fee:100000,sk:'f4'},
+  {id:5,name:'정태영',concern:'이마 주름',  fee:115000,sk:'m1'},
+  {id:6,name:'한소희',concern:'전체 리프팅',fee:160000,sk:'f2',vip:1},
+  {id:7,name:'오민지',concern:'입꼬리 처짐',fee:105000,sk:'f3'},
+  {id:8,name:'윤채원',concern:'팔자주름',   fee:125000,sk:'f1'},
+];
+const SK={
+  f1:{skin:'#FDD9A8',shade:'#F0C070',hair:'#2A1008',hrhi:'#5A2E14',lip:'#E87090',blush:'rgba(255,130,130,.22)',brow:'#2A1008'},
+  f2:{skin:'#F5C87A',shade:'#E0A050',hair:'#5A2E10',hrhi:'#8A4828',lip:'#D06878',blush:'rgba(240,110,90,.18)',brow:'#5A2E10'},
+  f3:{skin:'#ECA860',shade:'#D08838',hair:'#180C04',hrhi:'#3C1E0C',lip:'#C05868',blush:'rgba(210,90,70,.15)',brow:'#180C04'},
+  f4:{skin:'#FFE0B8',shade:'#F8C898',hair:'#4A2818',hrhi:'#7A4838',lip:'#F090A8',blush:'rgba(255,150,150,.25)',brow:'#4A2818'},
+  m1:{skin:'#F0C890',shade:'#DCA868',hair:'#1A0E08',hrhi:'#3A2010',lip:'#B07868',blush:'rgba(190,100,80,.12)',brow:'#1A0E08'},
+};
+
+// --- 기존 얼굴 그리기 로직 (그대로 유지) ---
+function drawFace(el, sk, state){
+  const W=150, H=170;
+  el.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  el.setAttribute('width','100%'); el.setAttribute('height','100%');
+  const c = SK[sk]||SK.f1;
+  const cx = 75;
+  const clipId = 'cl_'+Math.random().toString(36).slice(2,7);
+
+  const P = {
+    f1:{ fcy:84, frx:44, fry:52, eyeY:76, mouthY:108, browY:62, eyeRx:11, eyeRy:9, eyeGap:21, pupilR:4.5, hairStyle:'bob', wrinkle:false, aged:false },
+    f2:{ fcy:88, frx:46, fry:54, eyeY:78, mouthY:114, browY:64, eyeRx:10, eyeRy:7.5, eyeGap:22, pupilR:4, hairStyle:'short_gray', wrinkle:true, aged:true },
+    f3:{ fcy:82, frx:38, fry:56, eyeY:74, mouthY:106, browY:60, eyeRx:13, eyeRy:11, eyeGap:20, pupilR:5.5, hairStyle:'long', wrinkle:false, aged:false },
+    f4:{ fcy:86, frx:48, fry:52, eyeY:78, mouthY:108, browY:64, eyeRx:14, eyeRy:12, eyeGap:20, pupilR:6, hairStyle:'twin_tail', wrinkle:false, aged:false },
+    m1:{ fcy:86, frx:46, fry:52, eyeY:76, mouthY:110, browY:62, eyeRx:10, eyeRy:7, eyeGap:22, pupilR:4.5, hairStyle:'male_short', wrinkle:true, aged:false },
+  };
+  const p = P[sk]||P.f1;
+  const {fcy,frx,fry,eyeY,mouthY,browY,eyeRx,eyeRy,eyeGap,pupilR} = p;
+
+  const defs=`<defs><clipPath id="${clipId}"><ellipse cx="${cx}" cy="${fcy}" rx="${frx-1}" ry="${fry-1}"/></clipPath></defs>`;
+
+  let faceShape='';
+  if(sk==='m1') faceShape=`<path d="M${cx-frx},${fcy} Q${cx-frx},${fcy+fry*0.3} ${cx-frx*0.6},${fcy+fry*0.82} Q${cx-frx*0.2},${fcy+fry} ${cx},${fcy+fry} Q${cx+frx*0.2},${fcy+fry} ${cx+frx*0.6},${fcy+fry*0.82} Q${cx+frx},${fcy+fry*0.3} ${cx+frx},${fcy} Q${cx+frx},${fcy-fry} ${cx},${fcy-fry} Q${cx-frx},${fcy-fry} ${cx-frx},${fcy} Z" fill="${c.skin}"/>`;
+  else if(sk==='f3') faceShape=`<path d="M${cx-frx},${fcy} Q${cx-frx+2},${fcy+fry*0.5} ${cx-8},${fcy+fry*0.95} Q${cx},${fcy+fry+4} ${cx+8},${fcy+fry*0.95} Q${cx+frx-2},${fcy+fry*0.5} ${cx+frx},${fcy} Q${cx+frx},${fcy-fry} ${cx},${fcy-fry} Q${cx-frx},${fcy-fry} ${cx-frx},${fcy} Z" fill="${c.skin}"/>`;
+  else if(sk==='f4') faceShape=`<ellipse cx="${cx}" cy="${fcy+4}" rx="${frx}" ry="${fry-2}" fill="${c.skin}"/>`;
+  else faceShape=`<ellipse cx="${cx}" cy="${fcy}" rx="${frx}" ry="${fry}" fill="${c.skin}"/>`;
+
+  const ears=`<ellipse cx="${cx-frx+2}" cy="${fcy+4}" rx="8" ry="${sk==='f3'?11:10}" fill="${c.skin}"/><ellipse cx="${cx+frx-2}" cy="${fcy+4}" rx="8" ry="${sk==='f3'?11:10}" fill="${c.skin}"/><ellipse cx="${cx-frx+2}" cy="${fcy+4}" rx="5" ry="6" fill="${c.shade}"/><ellipse cx="${cx+frx-2}" cy="${fcy+4}" rx="5" ry="6" fill="${c.shade}"/>`;
+
+  let hBack='', hFront='';
+  if(p.hairStyle==='male_short'){
+    hBack=`<ellipse cx="${cx}" cy="${fcy-22}" rx="${frx+4}" ry="${fry*0.52}" fill="${c.hair}"/>`;
+    hFront=`<path d="M${cx-frx+2},${fcy-32} Q${cx-20},${fcy-68} ${cx},${fcy-68} Q${cx+20},${fcy-68} ${cx+frx-2},${fcy-32}" fill="${c.hair}"/><path d="M${cx-frx},${fcy-30} Q${cx-34},${fcy-58} ${cx-18},${fcy-46}" fill="${c.hrhi}" opacity=".35"/>`;
+  } else if(p.hairStyle==='long'){
+    hBack=`<ellipse cx="${cx}" cy="${fcy-10}" rx="${frx+8}" ry="${fry*0.72}" fill="${c.hair}"/><rect x="${cx-frx-10}" y="${fcy+8}" width="16" height="55" rx="8" fill="${c.hair}"/><rect x="${cx+frx-6}" y="${fcy+8}" width="16" height="55" rx="8" fill="${c.hair}"/>`;
+    hFront=`<path d="M${cx-frx+2},${fcy-30} Q${cx-26},${fcy-72} ${cx},${fcy-74} Q${cx+26},${fcy-72} ${cx+frx-2},${fcy-30}" fill="${c.hair}"/><path d="M${cx-frx-2},${fcy-28} Q${cx-40},${fcy-64} ${cx-22},${fcy-50}" fill="${c.hrhi}" opacity=".28"/><path d="M${cx+frx+2},${fcy-28} Q${cx+40},${fcy-64} ${cx+22},${fcy-50}" fill="${c.hrhi}" opacity=".2"/>`;
+  } else if(p.hairStyle==='twin_tail'){
+    hBack=`<ellipse cx="${cx}" cy="${fcy-10}" rx="${frx+6}" ry="${fry*0.68}" fill="${c.hair}"/><ellipse cx="${cx-frx-8}" cy="${fcy+30}" rx="10" ry="22" fill="${c.hair}"/><ellipse cx="${cx+frx+8}" cy="${fcy+30}" rx="10" ry="22" fill="${c.hair}"/>`;
+    hFront=`<path d="M${cx-frx+2},${fcy-30} Q${cx-24},${fcy-70} ${cx},${fcy-72} Q${cx+24},${fcy-70} ${cx+frx-2},${fcy-30}" fill="${c.hair}"/><ellipse cx="${cx-frx+4}" cy="${fcy+8}" rx="6" ry="6" fill="${c.hrhi}" opacity=".7"/><ellipse cx="${cx+frx-4}" cy="${fcy+8}" rx="6" ry="6" fill="${c.hrhi}" opacity=".7"/>`;
+  } else if(p.hairStyle==='short_gray'){
+    hBack=`<ellipse cx="${cx}" cy="${fcy-14}" rx="${frx+5}" ry="${fry*0.60}" fill="${c.hair}"/><rect x="${cx-frx-3}" y="${fcy+10}" width="11" height="28" rx="5" fill="${c.hair}"/><rect x="${cx+frx-8}" y="${fcy+10}" width="11" height="28" rx="5" fill="${c.hair}"/>`;
+    hFront=`<path d="M${cx-frx+2},${fcy-30} Q${cx-24},${fcy-66} ${cx},${fcy-68} Q${cx+24},${fcy-66} ${cx+frx-2},${fcy-30}" fill="${c.hair}"/><path d="M${cx-10},${fcy-68} Q${cx+4},${fcy-65} ${cx+18},${fcy-58}" stroke="#D8D0C0" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".7"/><path d="M${cx-22},${fcy-62} Q${cx-8},${fcy-60} ${cx+4},${fcy-52}" stroke="#E0D8C8" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".55"/>`;
+  } else {
+    hBack=`<ellipse cx="${cx}" cy="${fcy-12}" rx="${frx+6}" ry="${fry*0.70}" fill="${c.hair}"/><rect x="${cx-frx-4}" y="${fcy+12}" width="12" height="36" rx="6" fill="${c.hair}"/><rect x="${cx+frx-8}" y="${fcy+12}" width="12" height="36" rx="6" fill="${c.hair}"/>`;
+    hFront=`<path d="M${cx-frx+2},${fcy-30} Q${cx-26},${fcy-68} ${cx},${fcy-70} Q${cx+26},${fcy-68} ${cx+frx-2},${fcy-30}" fill="${c.hair}"/><path d="M${cx-frx},${fcy-28} Q${cx-38},${fcy-60} ${cx-20},${fcy-48}" fill="${c.hrhi}" opacity=".30"/>`;
+  }
+
+  let brows='';
+  if(sk==='m1') brows=`<path d="M${cx-34},${browY+1} L${cx-12},${browY-3}" stroke="${c.brow}" stroke-width="3.2" fill="none" stroke-linecap="round"/><path d="M${cx+12},${browY-3} L${cx+34},${browY+1}" stroke="${c.brow}" stroke-width="3.2" fill="none" stroke-linecap="round"/>`;
+  else if(p.aged) brows=`<path d="M${cx-33},${browY+4} Q${cx-22},${browY} ${cx-12},${browY+3}" stroke="${c.brow}" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".7"/><path d="M${cx+12},${browY+3} Q${cx+22},${browY} ${cx+33},${browY+4}" stroke="${c.brow}" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".7"/>`;
+  else if(sk==='f3') brows=`<path d="M${cx-30},${browY+1} Q${cx-20},${browY-6} ${cx-10},${browY+1}" stroke="${c.brow}" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M${cx+10},${browY+1} Q${cx+20},${browY-6} ${cx+30},${browY+1}" stroke="${c.brow}" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
+  else if(sk==='f4') brows=`<path d="M${cx-27},${browY+2} Q${cx-18},${browY-4} ${cx-10},${browY+2}" stroke="${c.brow}" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M${cx+10},${browY+2} Q${cx+18},${browY-4} ${cx+27},${browY+2}" stroke="${c.brow}" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+  else brows=`<path d="M${cx-33},${browY+2} Q${cx-22},${browY-3} ${cx-12},${browY+1}" stroke="${c.brow}" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M${cx+12},${browY+1} Q${cx+22},${browY-3} ${cx+33},${browY+2}" stroke="${c.brow}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`;
+
+  const noseScale = sk==='f3'?0.85 : sk==='f4'?1.1 : 1;
+  const nose=`<ellipse cx="${cx-4}" cy="${fcy+12}" rx="${3.2*noseScale}" ry="${2*noseScale}" fill="rgba(0,0,0,.09)"/><ellipse cx="${cx+4}" cy="${fcy+12}" rx="${3.2*noseScale}" ry="${2*noseScale}" fill="rgba(0,0,0,.09)"/><path d="M${cx-4},${fcy+10} Q${cx},${fcy+6} ${cx+4},${fcy+10}" stroke="rgba(0,0,0,.09)" stroke-width="1.2" fill="none"/>`;
+
+  const blushRx = sk==='f4'?17 : sk==='f2'?12 : 14;
+  const blush=`<ellipse cx="${cx-30}" cy="${eyeY+18}" rx="${blushRx}" ry="8" fill="${c.blush}"/><ellipse cx="${cx+30}" cy="${eyeY+18}" rx="${blushRx}" ry="8" fill="${c.blush}"/>`;
+
+  let wrinkles='';
+  if(sk==='f2') wrinkles=`<path d="M${cx-10},${eyeY+8} Q${cx-4},${eyeY+12} ${cx-2},${eyeY+18}" stroke="rgba(0,0,0,.1)" stroke-width="1" fill="none" stroke-linecap="round"/><path d="M${cx+10},${eyeY+8} Q${cx+4},${eyeY+12} ${cx+2},${eyeY+18}" stroke="rgba(0,0,0,.1)" stroke-width="1" fill="none" stroke-linecap="round"/><path d="M${cx-18},${eyeY+18} Q${cx-22},${mouthY-4} ${cx-16},${mouthY+2}" stroke="rgba(0,0,0,.09)" stroke-width="1.2" fill="none" stroke-linecap="round"/><path d="M${cx+18},${eyeY+18} Q${cx+22},${mouthY-4} ${cx+16},${mouthY+2}" stroke="rgba(0,0,0,.09)" stroke-width="1.2" fill="none" stroke-linecap="round"/><ellipse cx="${cx-32}" cy="${mouthY-4}" rx="10" ry="6" fill="rgba(0,0,0,.05)"/><ellipse cx="${cx+32}" cy="${mouthY-4}" rx="10" ry="6" fill="rgba(0,0,0,.05)"/>`;
+  else if(sk==='m1') wrinkles=`<path d="M${cx-22},${browY-10} Q${cx},${browY-13} ${cx+22},${browY-10}" stroke="rgba(0,0,0,.1)" stroke-width="1.2" fill="none" stroke-linecap="round"/><path d="M${cx-18},${browY-4}  Q${cx},${browY-7}  ${cx+18},${browY-4}" stroke="rgba(0,0,0,.08)" stroke-width="1" fill="none" stroke-linecap="round"/><ellipse cx="${cx}" cy="${mouthY+8}" rx="18" ry="9" fill="rgba(80,40,20,.07)"/>`;
+
+  function eyePair(happy){
+    if(happy){
+      const arc = eyeRx*0.9;
+      return `<path d="M${cx-eyeGap-arc},${eyeY+2} Q${cx-eyeGap},${eyeY-eyeRy-2} ${cx-eyeGap+arc},${eyeY+2}" stroke="${c.brow}" stroke-width="${sk==='f4'?3.2:2.6}" fill="none" stroke-linecap="round"/><path d="M${cx+eyeGap-arc},${eyeY+2} Q${cx+eyeGap},${eyeY-eyeRy-2} ${cx+eyeGap+arc},${eyeY+2}" stroke="${c.brow}" stroke-width="${sk==='f4'?3.2:2.6}" fill="none" stroke-linecap="round"/>`;
+    }
+    const ex1=cx-eyeGap, ex2=cx+eyeGap;
+    const droop = p.aged ? 2 : 0;
+    return `<ellipse cx="${ex1}" cy="${eyeY}" rx="${eyeRx}" ry="${eyeRy}" fill="white"/><ellipse cx="${ex1}" cy="${eyeY+droop*0.3}" rx="${eyeRx*0.65}" ry="${eyeRy*0.82}" fill="${c.brow}"/><ellipse cx="${ex1}" cy="${eyeY+droop*0.3}" rx="${pupilR}" ry="${pupilR*1.05}" fill="#111"/><ellipse cx="${ex1-2}" cy="${eyeY+droop*0.3-2}" rx="1.8" ry="1.8" fill="rgba(255,255,255,.82)"/><path d="M${ex1-eyeRx-1},${eyeY-droop-3} Q${ex1},${eyeY-eyeRy*1.35-droop} ${ex1+eyeRx+1},${eyeY-droop-3}" fill="${c.skin}"/>${sk==='f4'?`<ellipse cx="${ex1}" cy="${eyeY-eyeRy-1}" rx="${eyeRx*0.7}" ry="2" fill="rgba(0,0,0,.12)"/>`:''}<ellipse cx="${ex2}" cy="${eyeY}" rx="${eyeRx}" ry="${eyeRy}" fill="white"/><ellipse cx="${ex2}" cy="${eyeY+droop*0.3}" rx="${eyeRx*0.65}" ry="${eyeRy*0.82}" fill="${c.brow}"/><ellipse cx="${ex2}" cy="${eyeY+droop*0.3}" rx="${pupilR}" ry="${pupilR*1.05}" fill="#111"/><ellipse cx="${ex2+2}" cy="${eyeY+droop*0.3-2}" rx="1.8" ry="1.8" fill="rgba(255,255,255,.82)"/><path d="M${ex2-eyeRx-1},${eyeY-droop-3} Q${ex2},${eyeY-eyeRy*1.35-droop} ${ex2+eyeRx+1},${eyeY-droop-3}" fill="${c.skin}"/>${sk==='f4'?`<ellipse cx="${ex2}" cy="${eyeY-eyeRy-1}" rx="${eyeRx*0.7}" ry="2" fill="rgba(0,0,0,.12)"/>`:''}${p.aged?`<path d="M${ex1+eyeRx},${eyeY} Q${ex1+eyeRx+4},${eyeY+4} ${ex1+eyeRx+2},${eyeY+8}" stroke="rgba(0,0,0,.1)" stroke-width=".9" fill="none"/><path d="M${ex2-eyeRx},${eyeY} Q${ex2-eyeRx-4},${eyeY+4} ${ex2-eyeRx-2},${eyeY+8}" stroke="rgba(0,0,0,.1)" stroke-width=".9" fill="none"/>`:''}`;
+  }
+
+  function mouthShape(happy){
+    const mw = sk==='f3'?13 : sk==='f4'?14 : sk==='m1'?15 : 12;
+    if(happy) return `<path d="M${cx-mw},${mouthY-2} Q${cx},${mouthY+13} ${cx+mw},${mouthY-2}" fill="${c.lip}"/><path d="M${cx-mw+2},${mouthY-1} Q${cx},${mouthY+5} ${cx+mw-2},${mouthY-1}" fill="rgba(255,255,255,.42)"/>`;
+    const droop = (p.aged||sk==='m1') ? 3 : 0;
+    return `<path d="M${cx-mw},${mouthY-droop} Q${cx},${mouthY+4} ${cx+mw},${mouthY-droop}" stroke="${c.lip}" stroke-width="${sk==='m1'?3:2.6}" fill="none" stroke-linecap="round"/>`;
+  }
+
+  let overlay='';
+  if(state==='tiger'){
+    const sy=eyeY+20, ey2=mouthY-6;
+    overlay=`
+      <g clip-path="url(#${clipId})">
+        <g opacity=".88"><line x1="${cx-34}" y1="${sy}" x2="${cx-12}" y2="${ey2}" stroke="#C81010" stroke-width="2.8" stroke-linecap="round"/><line x1="${cx-34}" y1="${sy}" x2="${cx-12}" y2="${ey2}" stroke="rgba(255,160,160,.5)" stroke-width="1.1" stroke-linecap="round"/><line x1="${cx-28}" y1="${sy+1}" x2="${cx-7}" y2="${ey2-1}" stroke="#C81010" stroke-width="2.0" stroke-linecap="round"/><line x1="${cx-22}" y1="${sy+2}" x2="${cx-2}" y2="${ey2-2}" stroke="#C81010" stroke-width="1.3" stroke-linecap="round" opacity=".65"/></g>
+        <g opacity=".88"><line x1="${cx+12}" y1="${sy}" x2="${cx+34}" y2="${ey2}" stroke="#C81010" stroke-width="2.8" stroke-linecap="round"/><line x1="${cx+12}" y1="${sy}" x2="${cx+34}" y2="${ey2}" stroke="rgba(255,160,160,.5)" stroke-width="1.1" stroke-linecap="round"/><line x1="${cx+7}" y1="${sy+1}" x2="${cx+28}" y2="${ey2-1}" stroke="#C81010" stroke-width="2.0" stroke-linecap="round"/><line x1="${cx+2}" y1="${sy+2}" x2="${cx+22}" y2="${ey2-2}" stroke="#C81010" stroke-width="1.3" stroke-linecap="round" opacity=".65"/></g>
+      </g>
+      <rect x="${cx-46}" y="${H-28}" width="92" height="22" rx="11" fill="#BB1111" stroke="#fff" stroke-width="2" opacity="0.95"/>
+      <text x="${cx}" y="${H-13}" text-anchor="middle" font-size="11" fill="white" font-weight="900" font-family="Noto Sans KR">타이거마스크!</text>`;
+  } else if(state==='burn'){
+    const by=eyeY+18;
+    overlay=`
+      <g clip-path="url(#${clipId})">
+        <ellipse cx="${cx-22}" cy="${by+8}" rx="13" ry="8" fill="rgba(180,45,5,.24)"/><ellipse cx="${cx-20}" cy="${by+14}" rx="9" ry="5.5" fill="rgba(200,60,10,.20)"/><ellipse cx="${cx+20}" cy="${by+6}" rx="12" ry="7.5" fill="rgba(180,45,5,.20)"/><ellipse cx="${cx+18}" cy="${by+13}" rx="8" ry="5" fill="rgba(200,60,10,.17)"/><circle cx="${cx-24}" cy="${by+4}" r="2.8" fill="rgba(255,130,50,.55)"/><circle cx="${cx-14}" cy="${by+18}" r="2.2" fill="rgba(255,130,50,.48)"/><circle cx="${cx+22}" cy="${by+2}" r="2.5" fill="rgba(255,130,50,.50)"/><circle cx="${cx+12}" cy="${by+20}" r="1.8" fill="rgba(255,130,50,.42)"/>
+      </g>
+      <rect x="${cx-46}" y="${H-28}" width="92" height="22" rx="11" fill="#B83C10" stroke="#fff" stroke-width="2" opacity="0.95"/>
+      <text x="${cx}" y="${H-13}" text-anchor="middle" font-size="11" fill="white" font-weight="900" font-family="Noto Sans KR">화상 흔적!</text>`;
+  } else if(state==='happy'){
+    overlay=`
+      <ellipse cx="${cx-30}" cy="${eyeY+18}" rx="15" ry="9" fill="rgba(255,120,120,.28)"/><ellipse cx="${cx+30}" cy="${eyeY+18}" rx="15" ry="9" fill="rgba(255,120,120,.28)"/>
+      <ellipse cx="${cx-8}" cy="${fcy-44}" rx="3.5" ry="3.5" fill="#FFD440" opacity=".8"/><ellipse cx="${cx+16}" cy="${fcy-50}" rx="2.5" ry="2.5" fill="#FF7BAC" opacity=".7"/><ellipse cx="${cx+32}" cy="${fcy-38}" rx="2" ry="2" fill="#4ECFA8" opacity=".8"/>`;
+  }
+
+  const eyes   = eyePair(state==='happy');
+  const mouth_ = mouthShape(state==='happy');
+
+  el.innerHTML = defs + hBack + ears + faceShape + hFront + brows + blush + nose + wrinkles + eyes + mouth_ + overlay;
+}
+
+// --- 게임 상태 및 로직 ---
+const GOAL=1000000;
+let G={};
+function initG(){
+  G={money:0,rep:60,day:1,illUse:0,cart:null,sel:null,queue:[],done:new Set(),pend:null};
+  genQ();
+}
+function genQ(){
+  G.queue=[...PT].sort(()=>Math.random()-.5).slice(0,5);
+  G.done=new Set(); G.sel=null; G.cart=null;
+}
+function illRisk(){return Math.min(80,20+G.illUse*18);}
+function fmt(n){const a=Math.abs(Math.round(n));return (n<0?'-':'')+a.toLocaleString('ko-KR');}
+
+function render(){
+  document.getElementById('hd-d').textContent=G.day;
+  document.getElementById('hd-m').textContent=fmt(G.money);
+  document.getElementById('hd-r').textContent=G.rep;
+
+  // 게이지 바 애니메이션
+  const mp=Math.min(100,Math.max(0,(G.money/GOAL)*100));
+  const rp=Math.min(100,Math.max(0,G.rep));
+  document.getElementById('gf-m').style.width=mp+'%';
+  document.getElementById('gf-r').style.width=rp+'%';
+  document.getElementById('gl-m').textContent=G.money.toLocaleString()+' / '+GOAL.toLocaleString();
+  document.getElementById('gl-r').textContent=G.rep+' / 100';
+
+  const risk=illRisk();
+  document.getElementById('ill-sub').textContent=`비용 -8,000 / 위험 ${risk}%`;
+  
+  const wb=document.getElementById('warn-banner');
+  if(G.illUse>0){
+    wb.style.display='flex';
+    document.getElementById('warn-txt').textContent=`불법 카트리지 ${G.illUse}회 누적 (부작용 확률 ${risk}%) 위험!`;
+  } else wb.style.display='none';
+
+  const lf=document.getElementById('lf-svg');
+  const li=document.getElementById('left-info');
+  const lp=document.getElementById('left-panel');
+  
+  if(G.sel){
+    drawFace(lf,G.sel.sk,'normal');
+    li.innerHTML=`<div class="pname">${G.sel.name}${G.sel.vip?' <span style="color:var(--ywd)">⭐ VIP</span>':''}</div><div class="ptag">${G.sel.concern}</div><div class="pfee">${fmt(G.sel.fee)}원</div>`;
+    lp.style.borderColor = 'var(--pk)'; // 선택 시 테두리 하이라이트
+  } else {
+    lf.innerHTML=''; li.innerHTML='<div class="ehint">손님을 선택하세요 👇</div>';
+    lp.style.borderColor = 'var(--deep)';
+  }
+
+  // 아이템 버튼 상태
+  document.getElementById('btn-gen').classList.toggle('on',G.cart==='genuine');
+  document.getElementById('btn-ill').classList.toggle('on',G.cart==='illegal');
+  
+  const gb=document.getElementById('go-btn');
+  if(G.sel&&G.cart){
+    gb.disabled=false;
+    gb.textContent='💉 시술 시작!';
+    gb.style.animation = 'bounce 0.5s infinite alternate';
+  } else {
+    gb.disabled=true;
+    gb.textContent= !G.sel ? '손님 선택 대기' : '카트리지 선택';
+    gb.style.animation = 'none';
+  }
+  renderQ();
+}
+
+function renderQ(){
+  const row=document.getElementById('queue-row');
+  row.innerHTML='';
+  const EMOJ={f1:'👩',f2:'👩‍🦳',f3:'👩‍🦰',f4:'👧',m1:'🧑'};
+  G.queue.forEach(p=>{
+    const d=document.createElement('div');
+    d.className='qc'+(G.sel?.id===p.id?' on':'')+(G.done.has(p.id)?' done':'');
+    d.innerHTML=(p.vip?'<div class="qvip">VIP</div>':'')+
+      `<div class="qface">${EMOJ[p.sk]||'👤'}</div><div class="qname">${p.name}</div><div class="qcon">${p.concern}</div>`;
+    d.onclick=()=>{
+      if(!G.done.has(p.id)){
+        G.sel=p; G.cart=null; hideRight(); render();
+        // 사운드 이펙트 흉내내는 통통 효과
+        d.style.transform = 'scale(0.9)';
+        setTimeout(()=>d.style.transform='', 100);
+      }
+    };
+    row.appendChild(d);
+  });
+}
+
+function pickCart(t){
+  if(!G.sel) return;
+  G.cart=t; 
+  render();
+}
+
+// 화면 위에 떠오르는 플로팅 텍스트 이펙트
+function showFloatingText(text, x, y, isGood) {
+  const el = document.createElement('div');
+  el.className = 'floating-txt ' + (isGood ? 'f-good' : 'f-bad');
+  el.textContent = text;
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1200);
+}
+
+function doTreat(){
+  if(!G.sel||!G.cart)return;
+  const p=G.sel, gen=G.cart==='genuine';
+  let ok, mD, rD, fst, eff;
+
+  if(gen){
+    ok=true; mD=p.fee-20000; rD=p.vip?6:3; fst='happy'; eff='완벽한 리프팅! ✨';
+  } else {
+    G.illUse++;
+    ok=(Math.random()*100)>illRisk();
+    if(ok){
+      mD=p.fee-8000; rD=1; fst='happy'; eff='운이 좋았어... ⚠️';
+    } else {
+      fst=Math.random()<0.5?'tiger':'burn';
+      mD=-(p.fee*(p.vip?4:3)); rD=p.vip?-35:-22;
+      eff=fst==='tiger'?'타이거마스크 발생! 😰':'화상 흔적 발생! 🔥';
+    }
+  }
+
+  G.money+=mD;
+  G.rep=Math.max(0,Math.min(100,G.rep+rD));
+  G.done.add(p.id);
+  
+  // 게임 이펙트 연출
+  const btnRect = document.getElementById('go-btn').getBoundingClientRect();
+  showFloatingText((mD>=0?'+':'')+fmt(mD), btnRect.left + 20, btnRect.top - 20, ok);
+
+  G.sel=null; G.cart=null;
+
+  // 오른쪽 결과 패널 오픈
+  const rightPanel = document.getElementById('right-panel');
+  rightPanel.classList.remove('panel-disabled');
+  
+  const rf=document.getElementById('rf-svg');
+  drawFace(rf,p.sk,fst);
+  
+  document.getElementById('right-info').innerHTML=
+    `<div class="pname" style="color:${ok?'var(--mnd)':'var(--rdd)'}">${ok?'✅ 성공!':'❌ 대참사!'}</div>
+     <div class="ptag" style="background:${ok?'var(--mn)':'var(--rd)'}; border-color:var(--deep); color:#fff">${eff}</div>`;
+
+  addLog(ok
+    ?`✅ ${p.name}님 시술 완료! (+${fmt(mD)} / 평판 +${rD})`
+    :`❌ ${p.name}님 의료 사고! (${fmt(mD)} 배상 / 평판 ${rD})`,
+    ok?'ok':'bad');
+
+  // 모달 내용 세팅
+  let desc='';
+  if(ok&&gen)            desc=`${p.name}님이 환하게 웃으며 돌아갔어요!\n정품 카트리지 덕분에 완벽한 리프팅 효과가 나타났습니다.`;
+  else if(ok&&!gen)      desc=`이번엔 다행히 괜찮았지만…\n지금 부작용 확률이 ${illRisk()}%까지 올라왔어요.\n계속 불법을 사용하면 정말 위험합니다!`;
+  else if(fst==='tiger') desc=`불법 카트리지의 불안정한 에너지가\n피부를 긁으며 볼에 타이거마스크 흉터를 남겼습니다.\n${p.name}님이 매우 화가 났어요.`;
+  else                   desc=`불법 카트리지 과열로 ${p.name}님의\n피부에 심각한 화상 흔적이 생겼습니다.\n엄청난 배상금을 지급하고 평판이 크게 떨어졌어요.`;
+
+  const rfw=document.getElementById('r-face-wrap');
+  rfw.innerHTML='<svg width="100" height="115" viewBox="0 0 150 170" id="modal-face-svg"></svg>';
+  drawFace(document.getElementById('modal-face-svg'), p.sk, fst);
+
+  const rttl = document.getElementById('r-ttl');
+  rttl.textContent = ok?'STAGE CLEAR!':'FAILED...';
+  rttl.style.background = ok?'var(--mn)':'var(--rd)';
+  
+  document.getElementById('r-dsc').textContent=desc;
+  document.getElementById('r-chips').innerHTML=
+    `<span class="cp ${mD>=0?'cpp':'cpn'}">💰 ${mD>=0?'+':''}${fmt(mD)}</span>
+     <span class="cp ${rD>=0?'cpp':'cpn'}">⭐ 평판 ${rD>=0?'+':''}${rD}</span>`;
+
+  render();
+
+  const endType=getEndType();
+  document._pendingEnd = endType || null;
+  
+  setTimeout(()=> {
+    document.getElementById('r-ov').classList.add('show');
+  }, 400); // 딜레이를 주어 플로팅 이펙트를 볼 시간을 제공
+}
+
+function getEndType(){
+  if(G.money>=GOAL)    return 'win';
+  if(G.rep<=0)         return 'rep';
+  if(G.money<=-150000) return 'broke';
+  return null;
+}
+
+function hideRight(){
+  const rp = document.getElementById('right-panel');
+  rp.classList.add('panel-disabled');
+  document.getElementById('rf-svg').innerHTML='';
+  document.getElementById('right-info').innerHTML='<div class="ehint">시술 후<br>결과가 표시됩니다</div>';
+}
+
+function closeResult(){
+  document.getElementById('r-ov').classList.remove('show');
+  if(document._pendingEnd){
+    const t=document._pendingEnd;
+    document._pendingEnd=null;
+    setTimeout(()=>showEnd(t),250);
+    return;
+  }
+  // 하루가 끝났는지 체크
+  if(G.queue.every(p=>G.done.has(p.id))){
+    G.day++;
+    setTimeout(()=>{
+      genQ(); render();
+      addLog(`☀️ DAY ${G.day} 시작! 새로운 손님들이 도착했습니다!`,'warn');
+      // 새로운 날 시각적 피드백
+      document.body.style.animation = 'pulse-bg 0.5s';
+      setTimeout(()=>document.body.style.animation='', 500);
+    },300);
+  }
+}
+
+function showEnd(t){
+  const titles={win:'🏆 TYCOON MASTER!', rep:'⛔ GAME OVER : 폐업', broke:'💸 GAME OVER : 파산'};
+  const descs={
+    win:  `목표 수익 달성!\n\n정품 카트리지를 꾸준히 사용한 덕분에\n환자들의 신뢰를 듬뿍 받는 최고의 클리닉이 되었습니다.\n안전한 시술이 성공의 지름길입니다! ✨`,
+    rep:  `불법 카트리지 부작용 사례가 SNS에 폭로되며\n클리닉 평판이 바닥을 쳤습니다.\n\n피해 후기가 확산되어 결국 문을 닫게 되었습니다...`,
+    broke:`부작용 배상금이 눈덩이처럼 불어나 파산했습니다.\n\n불법 카트리지로 아낀 푼돈보다\n배상금으로 나간 돈이 훨씬 큽니다.`,
+  };
+  
+  const efw=document.getElementById('e-face-wrap');
+  const endSk=['f1','f2','f3','f4','m1'][Math.floor(Math.random()*5)];
+  const endState=t==='win'?'happy':(Math.random()<.5?'tiger':'burn');
+  efw.innerHTML='<svg width="100" height="115" viewBox="0 0 150 170" id="end-face-svg"></svg>';
+  drawFace(document.getElementById('end-face-svg'), endSk, endState);
+
+  const ettl = document.getElementById('e-ttl');
+  ettl.textContent = titles[t];
+  ettl.style.color = t==='win'?'var(--yw)':'var(--rd)';
+  ettl.style.textShadow = `2px 2px 0 var(--deep)`;
+  
+  document.getElementById('e-dsc').textContent=descs[t];
+  document.getElementById('e-btn').className='mbtn game-font'+(t==='win'?' gold':'');
+  document.getElementById('e-ov').classList.add('show');
+}
+
+function restart(){
+  document._pendingEnd=null;
+  document.getElementById('e-ov').classList.remove('show');
+  document.getElementById('r-ov').classList.remove('show');
+  document.getElementById('log-box').innerHTML='';
+  hideRight();
+  initG(); render();
+  addLog('게임을 시작합니다! 정품 카트리지로 최고의 클리닉을 만들어보세요 💪');
+}
+
+function addLog(t,cls=''){
+  const b=document.getElementById('log-box');
+  const d=document.createElement('div');
+  d.className='log '+cls+' fadein';d.textContent=t;
+  b.prepend(d);
+  while(b.children.length>4) b.removeChild(b.lastChild);
+}
+
+// 초기 시작
+initG(); render();
+addLog('게임을 시작합니다! 정품 카트리지로 최고의 클리닉을 만들어보세요 💪');
+</script>
+</body>
+</html>
