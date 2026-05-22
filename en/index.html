@@ -545,7 +545,7 @@ const PT=[
   {id:3,name:'Camille D.', concern:'Jawline Lift',    fee:120000,sk:'f3'},
   {id:4,name:'Emma R.',    concern:'Eye Firming',     fee:100000,sk:'f4'},
   {id:5,name:'Chris W.',   concern:'Forehead Lines',  fee:115000,sk:'m1'},
-  {id:6,name:'Victoria B.',concern:'Full Face Lift',  fee:160000,sk:'f2',vip:1},
+  {id:6,name:'Victoria B.',concern:'Full Face Lift',  fee:160000,sk:'f6',vip:1},
   {id:7,name:'Emily S.',concern:'Drooping Mouth',  fee:105000,sk:'f3'},
   {id:8,name:'Gwen S.',   concern:'Smile Lines',     fee:125000,sk:'f5'},
 ];
@@ -556,6 +556,7 @@ const SK={
   f3:{skin:'#ECA860',shade:'#D08838',hair:'#180C04',hrhi:'#3C1E0C',lip:'#C05868',blush:'rgba(210,90,70,.15)',brow:'#180C04'},
   f4:{skin:'#FFE0B8',shade:'#F8C898',hair:'#4A2818',hrhi:'#7A4838',lip:'#F090A8',blush:'rgba(255,150,150,.25)',brow:'#4A2818'},
   f5:{skin:'#FFE0B8',shade:'#E2E5EC',hair:'#1A1C23',hrhi:'#3E4455',lip:'#BD7A88',blush:'rgba(210,140,150,.15)',brow:'#1A1C23'},
+  f6:{skin:'#FCEFE3',shade:'#E3D5CA',hair:'#D4D7DF',hrhi:'#FFFFFF',lip:'#A64B58',blush:'rgba(220,150,160,.12)',brow:'#7A7E85'},
   m1:{skin:'#F0C890',shade:'#DCA868',hair:'#1A0E08',hrhi:'#3A2010',lip:'#B07868',blush:'rgba(190,100,80,.12)',brow:'#1A0E08'},
 };
 
@@ -577,8 +578,9 @@ function drawFace(el, sk, state){
     f1:{ fcy:84, frx:44, fry:52, eyeY:76, mouthY:108, browY:62, eyeRx:11,  eyeRy:6,   eyeGap:21, pupilR:4.5, hairStyle:'bob',        wrinkle:false, aged:false },
     f2:{ fcy:88, frx:46, fry:54, eyeY:78, mouthY:114, browY:64, eyeRx:10,  eyeRy:7.5, eyeGap:22, pupilR:4,   hairStyle:'short_gray', wrinkle:true,  aged:true  },
     f3:{ fcy:82, frx:38, fry:56, eyeY:74, mouthY:106, browY:60, eyeRx:13,  eyeRy:7,  eyeGap:20, pupilR:5.5, hairStyle:'long',        wrinkle:false, aged:false },
-    f4:{ fcy:86, frx:48, fry:52, eyeY:78, mouthY:108, browY:64, eyeRx:14,  eyeRy:8,  eyeGap:20, pupilR:6,   hairStyle:'twin_tail',   wrinkle:false, aged:false },
+    f4:{ fcy:86, frx:48, fry:52, eyeY:78, mouthY:108, browY:64, eyeRx:14,  eyeRy:6,  eyeGap:20, pupilR:6,   hairStyle:'twin_tail',   wrinkle:false, aged:false },
     f5:{ fcy:86, frx:48, fry:52, eyeY:78, mouthY:108, browY:64, eyeRx:14,  eyeRy:8,  eyeGap:20, pupilR:6,   hairStyle:'straight_long',   wrinkle:false, aged:false },
+    f6:{ fcy:86, frx:48, fry:52, eyeY:78, mouthY:108, browY:62, eyeRx:13,  eyeRy:7,  eyeGap:20, pupilR:5,   hairStyle:'regent',   wrinkle:true, aged:true },
     m1:{ fcy:86, frx:46, fry:52, eyeY:76, mouthY:110, browY:62, eyeRx:10,  eyeRy:5.5,   eyeGap:22, pupilR:4.5, hairStyle:'male_short',  wrinkle:true,  aged:false },
   };
   const p = P[sk]||P.f1;
@@ -796,7 +798,7 @@ function render(){
 function renderQ(){
   const row=document.getElementById('queue-row');
   row.innerHTML='';
-  const EMOJ={f1:'👩',f2:'👩‍🦳',f3:'👩‍🦰',f4:'👧',m1:'🧑',f5:'👱‍♀️'};
+  const EMOJ={f1:'👩',f2:'👩‍🦳',f3:'👩‍🦰',f4:'👧',m1:'🧑',f5:'👱‍♀️',f6:'👵'};
   G.queue.forEach(p=>{
     const isDone = G.done.has(p.id);
     const isSelected = G.sel?.id===p.id;
