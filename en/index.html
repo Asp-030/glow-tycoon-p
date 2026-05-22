@@ -58,7 +58,7 @@ body {
   margin-bottom: 8px;
 }
 .logo {
-  font-size: 26px; font-weight: 900; color: #fff;
+  font-size: 28px; font-weight: 900; color: #fff;
   text-shadow: 3px 3px 0 var(--line), -1px -1px 0 var(--line), 1px -1px 0 var(--line), -1px 1px 0 var(--line), 1px 1px 0 var(--line);
   transform: rotate(-3deg);
   animation: float 2.5s ease-in-out infinite;
@@ -389,7 +389,7 @@ body {
 <div id="game-console">
 
   <div id="hud">
-    <div class="logo">✨<em>Keep</em>it Real</div>
+    <div class="logo">✨<em>Keep</em> it Real</div>
     <div class="hud-right">
       <div class="hstat day-stat">
         <span class="label">DAY</span>
@@ -575,13 +575,13 @@ function drawFace(el, sk, state){
   const clipId = 'cl_'+Math.random().toString(36).slice(2,7);
 
   const P = {
-    f1:{ fcy:84, frx:44, fry:52, eyeY:76, mouthY:108, browY:62, eyeRx:11,  eyeRy:6,   eyeGap:21, pupilR:4.5, hairStyle:'bob',        wrinkle:false, aged:false },
-    f2:{ fcy:88, frx:46, fry:54, eyeY:78, mouthY:114, browY:64, eyeRx:10,  eyeRy:7.5, eyeGap:22, pupilR:4,   hairStyle:'short_gray', wrinkle:true,  aged:true  },
-    f3:{ fcy:82, frx:38, fry:56, eyeY:74, mouthY:106, browY:60, eyeRx:13,  eyeRy:7,  eyeGap:20, pupilR:5.5, hairStyle:'long',        wrinkle:false, aged:false },
-    f4:{ fcy:86, frx:48, fry:52, eyeY:78, mouthY:108, browY:64, eyeRx:14,  eyeRy:6,  eyeGap:20, pupilR:6,   hairStyle:'twin_tail',   wrinkle:false, aged:false },
+    f1:{ fcy:84, frx:44, fry:52, eyeY:76, mouthY:108, browY:62, eyeRx:11,  eyeRy:9,   eyeGap:21, pupilR:4.5, hairStyle:'bob',        wrinkle:false, aged:false },
+    f2:{ fcy:88, frx:46, fry:54, eyeY:78, mouthY:114, browY:64, eyeRx:10,  eyeRy:11, eyeGap:22, pupilR:4,   hairStyle:'short_gray', wrinkle:true,  aged:true  },
+    f3:{ fcy:82, frx:38, fry:56, eyeY:74, mouthY:106, browY:60, eyeRx:13,  eyeRy:12,  eyeGap:20, pupilR:5.5, hairStyle:'long',        wrinkle:false, aged:false },
+    f4:{ fcy:86, frx:48, fry:52, eyeY:78, mouthY:108, browY:64, eyeRx:14,  eyeRy:10,  eyeGap:20, pupilR:6,   hairStyle:'twin_tail',   wrinkle:false, aged:false },
     f5:{ fcy:86, frx:48, fry:52, eyeY:78, mouthY:108, browY:64, eyeRx:14,  eyeRy:8,  eyeGap:20, pupilR:6,   hairStyle:'straight_long',   wrinkle:false, aged:false },
-    f6:{ fcy:86, frx:48, fry:52, eyeY:78, mouthY:108, browY:62, eyeRx:13,  eyeRy:7,  eyeGap:20, pupilR:5,   hairStyle:'regent',   wrinkle:true, aged:true },
-    m1:{ fcy:86, frx:46, fry:52, eyeY:76, mouthY:110, browY:62, eyeRx:10,  eyeRy:5.5,   eyeGap:22, pupilR:4.5, hairStyle:'male_short',  wrinkle:true,  aged:false },
+    f6:{ fcy:86, frx:48, fry:52, eyeY:78, mouthY:108, browY:62, eyeRx:13,  eyeRy:6.5,  eyeGap:20, pupilR:5,   hairStyle:'regent',   wrinkle:true, aged:true },
+    m1:{ fcy:86, frx:46, fry:52, eyeY:76, mouthY:110, browY:62, eyeRx:10,  eyeRy:6,   eyeGap:22, pupilR:4.5, hairStyle:'male_short',  wrinkle:true,  aged:false },
   };
   const p = P[sk]||P.f1;
   const {fcy,frx,fry,eyeY,mouthY,browY,eyeRx,eyeRy,eyeGap,pupilR} = p;
@@ -627,7 +627,7 @@ function drawFace(el, sk, state){
     }
     const ex1=cx-eyeGap, ex2=cx+eyeGap;
     const droop = p.aged ? 2 : 0;
-    return `<ellipse cx="${ex1}" cy="${eyeY}" rx="${eyeRx}" ry="${eyeRy}" fill="white"/><ellipse cx="${ex1}" cy="${eyeY+droop*0.3}" rx="${eyeRx*0.65}" ry="${eyeRy*0.82}" fill="${c.brow}"/><ellipse cx="${ex1}" cy="${eyeY+droop*0.3}" rx="${pupilR}" ry="${pupilR*1.05}" fill="#111"/><ellipse cx="${ex1-2}" cy="${eyeY+droop*0.3-2}" rx="1.8" ry="1.8" fill="rgba(255,255,255,.82)"/><path d="M${ex1-eyeRx-1},${eyeY-droop-3} Q${ex1},${eyeY-eyeRy*1.35-droop} ${ex1+eyeRx+1},${eyeY-droop-3}" fill="${c.skin}"/>${sk==='f4'?`<ellipse cx="${ex1}" cy="${eyeY-eyeRy-1}" rx="${eyeRx*0.7}" ry="2" fill="rgba(0,0,0,.12)"/>`:''}<ellipse cx="${ex2}" cy="${eyeY}" rx="${eyeRx}" ry="${eyeRy}" fill="white"/><ellipse cx="${ex2}" cy="${eyeY+droop*0.3}" rx="${eyeRx*0.65}" ry="${eyeRy*0.82}" fill="${c.brow}"/><ellipse cx="${ex2}" cy="${eyeY+droop*0.3}" rx="${pupilR}" ry="${pupilR*1.05}" fill="#111"/><ellipse cx="${ex2+2}" cy="${eyeY+droop*0.3-2}" rx="1.8" ry="1.8" fill="rgba(255,255,255,.82)"/><path d="M${ex2-eyeRx-1},${eyeY-droop-3} Q${ex2},${eyeY-eyeRy*1.35-droop} ${ex2+eyeRx+1},${eyeY-droop-3}" fill="${c.skin}"/>${sk==='f4'?`<ellipse cx="${ex2}" cy="${eyeY-eyeRy-1}" rx="${eyeRx*0.7}" ry="2" fill="rgba(0,0,0,.12)"/>`:''}${p.aged?`<path d="M${ex1+eyeRx},${eyeY} Q${ex1+eyeRx+4},${eyeY+4} ${ex1+eyeRx+2},${eyeY+8}" stroke="rgba(0,0,0,.1)" stroke-width=".9" fill="none"/><path d="M${ex2-eyeRx},${eyeY} Q${ex2-eyeRx-4},${eyeY+4} ${ex2-eyeRx-2},${eyeY+8}" stroke="rgba(0,0,0,.1)" stroke-width=".9" fill="none"/>`:''}`;
+    return `<ellipse cx="${ex1}" cy="${eyeY}" rx="${eyeRx}" ry="${eyeRy}" fill="white"/><ellipse cx="${ex1}" cy="${eyeY+droop*0.3}" rx="${eyeRx*0.65}" ry="${eyeRy*0.82}" fill="${c.brow}"/><ellipse cx="${ex1}" cy="${eyeY+droop*0.3}" rx="${pupilR}" ry="${pupilR*1.05}" fill="#111"/><ellipse cx="${ex1-2}" cy="${eyeY+droop*0.3-2}" rx="1.8" ry="1.8" fill="rgba(255,255,255,.82)"/><path d="M${ex1-eyeRx-1},${eyeY-droop-3} Q${ex1},${eyeY-eyeRy*0.9-droop} ${ex1+eyeRx+1},${eyeY-droop-3}" fill="${c.skin}"/>${sk==='f4'?`<ellipse cx="${ex1}" cy="${eyeY-eyeRy-1}" rx="${eyeRx*0.7}" ry="2" fill="rgba(0,0,0,.12)"/>`:''}<ellipse cx="${ex2}" cy="${eyeY}" rx="${eyeRx}" ry="${eyeRy}" fill="white"/><ellipse cx="${ex2}" cy="${eyeY+droop*0.3}" rx="${eyeRx*0.65}" ry="${eyeRy*0.82}" fill="${c.brow}"/><ellipse cx="${ex2}" cy="${eyeY+droop*0.3}" rx="${pupilR}" ry="${pupilR*1.05}" fill="#111"/><ellipse cx="${ex2+2}" cy="${eyeY+droop*0.3-2}" rx="1.8" ry="1.8" fill="rgba(255,255,255,.82)"/><path d="M${ex2-eyeRx-1},${eyeY-droop-3} Q${ex2},${eyeY-eyeRy*1.35-droop} ${ex2+eyeRx+1},${eyeY-droop-3}" fill="${c.skin}"/>${sk==='f4'?`<ellipse cx="${ex2}" cy="${eyeY-eyeRy-1}" rx="${eyeRx*0.7}" ry="2" fill="rgba(0,0,0,.12)"/>`:''}${p.aged?`<path d="M${ex1+eyeRx},${eyeY} Q${ex1+eyeRx+4},${eyeY+4} ${ex1+eyeRx+2},${eyeY+8}" stroke="rgba(0,0,0,.1)" stroke-width=".9" fill="none"/><path d="M${ex2-eyeRx},${eyeY} Q${ex2-eyeRx-4},${eyeY+4} ${ex2-eyeRx-2},${eyeY+8}" stroke="rgba(0,0,0,.1)" stroke-width=".9" fill="none"/>`:''}`;
   }
 
   function mouthShape(happy){
