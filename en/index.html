@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Genuine Cartridge vs Non-genuine Cartridge</title>
+<title>Keep it Real</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Noto+Sans:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-/* ── 아케이드 변수 팔레트 (화사하고 밝은 테마로 톤업) ── */
 :root {
   --line: #5A3D5C;
   --bg-pink: #FFF0F6;
@@ -31,7 +30,6 @@ html, body {
   user-select: none;
 }
 
-/* ── 연분홍 도트 배경 ── */
 body {
   background-color: var(--bg-pink);
   background-image: radial-gradient(#FFD9EB 20%, transparent 20%), radial-gradient(#FFD9EB 20%, transparent 20%);
@@ -43,7 +41,6 @@ body {
   padding: 20px 10px;
 }
 
-/* ── 메인 게임기 보드 ── */
 #game-console {
   width: 100%;
   max-width: 860px;
@@ -53,7 +50,6 @@ body {
   gap: 16px;
 }
 
-/* ── 심플 HUD 바 ── */
 #hud {
   display: flex;
   justify-content: space-between;
@@ -70,10 +66,7 @@ body {
 }
 .logo em { color: var(--yellow); font-style: normal; }
 
-.hud-right {
-  display: flex;
-  gap: 12px;
-}
+.hud-right { display: flex; gap: 12px; }
 .hstat {
   background: var(--white);
   border: 3px solid var(--line);
@@ -89,7 +82,6 @@ body {
 .hstat .label { font-size: 16px; color: var(--line); }
 .hstat .val { font-size: 20px; color: var(--line); font-family: 'Fredoka', sans-serif;}
 
-/* ── 목표 게이지 바 ── */
 #goalbar {
   display: flex;
   gap: 20px;
@@ -116,14 +108,13 @@ body {
   height: 100%;
   border-right: 3px solid #6E3B82;
   transition: width 0.4s cubic-bezier(0.34, 1.5, 0.64, 1);
-  background-image: repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.3) 0, rgba(255, 255, 255, 0.3) 10px, transparent 10px, transparent 20px);
+  background-image: repeating-linear-gradient(-45deg, rgba(255,255,255,0.3) 0, rgba(255,255,255,0.3) 10px, transparent 10px, transparent 20px);
   background-size: 28px 28px;
   animation: moveStripes 1s linear infinite;
 }
 .gi-fill.m { background-color: var(--yellow); }
 .gi-fill.r { background-color: var(--mint); }
 
-/* ── 메인 시술 씬 ── */
 #scene {
   display: grid;
   grid-template-columns: 1fr 190px 1fr;
@@ -131,7 +122,6 @@ body {
   align-items: stretch;
 }
 
-/* 얼굴 패널 */
 .face-panel {
   background: var(--white);
   border: 4px solid var(--pk);
@@ -177,10 +167,11 @@ body {
 }
 .ehint { font-size: 14px; font-weight: 900; color: #888; padding: 20px 0; line-height: 1.5; }
 
-/* 회색 비활성화 상태 */
+/* burn_light 환자 카드 표시 */
+.ptag-burn { background: #FFE8D0; border-color: #D06030; color: #A04020; }
+
 .panel-disabled { opacity: 0.55; filter: grayscale(1); }
 
-/* ── 중앙 컨트롤 기기 영역 ── */
 #mid-col {
   display: flex; flex-direction: column; align-items: center; gap: 12px;
   background: #EAF7FC;
@@ -191,18 +182,14 @@ body {
   position: relative;
 }
 
-/* 기기 일러스트 */
 .dev-box {
   width: 90px; height: 90px;
   background: #FFF; border: 4px solid var(--line); border-radius: 16px;
   display: flex; align-items: center; justify-content: center;
   margin-bottom: 4px;
 }
-.btn-wrap {
-  display: flex; flex-direction: column; gap: 10px; width: 100%;
-}
+.btn-wrap { display: flex; flex-direction: column; gap: 10px; width: 100%; }
 
-/* 쫀득한 3D 카트리지 버튼 */
 .cbt {
   width: 100%; padding: 12px 6px;
   border: 4px solid var(--line); border-radius: 16px;
@@ -221,7 +208,6 @@ body {
   padding: 2px; border-radius: 6px; border: 2px solid var(--line);
 }
 
-/* 시술 시작 3D 버튼 */
 #go-btn {
   width: 100%; padding: 16px 0; margin-top: auto;
   background: var(--yellow); color: var(--line);
@@ -237,7 +223,6 @@ body {
   box-shadow: 0 8px 0 #B0B0B0; cursor: not-allowed;
 }
 
-/* ── 위험 배너 ── */
 #warn-banner {
   background: #FFE8E8; 
   border: 3px solid #FF8FA3; 
@@ -252,7 +237,6 @@ body {
   100% { transform: scale(1.02); background: #FFDCE0; box-shadow: 0 5px 0 #C95E73; } 
 }
 
-/* ── 알림 로그 박스 ── */
 #log-box { display: flex; flex-direction: column; gap: 8px; }
 .log {
   font-size: 13px; font-weight: 900;
@@ -266,7 +250,6 @@ body {
 .log.bad { background: #FFE8E8; border-color: var(--red-dark); }
 .log.warn { background: #FFF9C4; border-color: var(--yellow-dark); }
 
-/* ── 대기줄 구역 ── */
 #queue-wrap {
   background: #F9F0FF;
   border: 4px solid var(--line); border-radius: 24px;
@@ -279,7 +262,6 @@ body {
 }
 #queue-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
 
-/* 손님 카드 */
 .qc {
   display: flex; flex-direction: column; align-items: center; gap: 4px;
   background: #FFF; border: 4px solid var(--line); border-radius: 20px;
@@ -290,8 +272,10 @@ body {
 .qc:active { transform: translateY(6px); box-shadow: 0 2px 0 #DABCE8; }
 .qc.on { background: var(--yellow); border-color: var(--line); transform: translateY(6px); box-shadow: 0 2px 0 var(--yellow-dark); }
 .qc.done { opacity: 0.4; pointer-events: none; filter: grayscale(1); background: #eee; box-shadow: 0 2px 0 #DABCE8; transform: translateY(6px); }
+/* burn_light 재방문 환자 카드 강조 */
+.qc.burn-revisit { border-color: #D06030; background: #FFF3EE; box-shadow: 0 8px 0 #D08050; }
+.qc.burn-revisit:hover { background: #FFE8D8; }
 
-/* 통통 튀는 VIP 아이콘 */
 .qvip {
   position: absolute; top: -12px; right: -10px;
   background: var(--red); color: white;
@@ -299,11 +283,17 @@ body {
   padding: 4px 10px; border-radius: 12px; border: 3px solid var(--line);
   animation: bouncein 1s infinite alternate;
 }
+/* burn_light 재방문 배지 */
+.qburn-badge {
+  position: absolute; top: -12px; left: -10px;
+  background: #E05010; color: white;
+  font-size: 10px; font-weight: 900;
+  padding: 4px 8px; border-radius: 12px; border: 3px solid var(--line);
+}
 .qface { font-size: 34px; line-height: 1; margin-bottom: 4px; }
 .qname { font-size: 13px; font-weight: 900; background: rgba(0,0,0,0.05); padding: 2px 8px; border-radius: 8px;}
 .qcon { font-size: 11px; color: #555; font-weight: 700; }
 
-/* ── 팝업 모달 ── */
 .ov {
   position: fixed; inset: 0; background: rgba(90,61,92, 0.6); backdrop-filter: blur(4px);
   display: flex; align-items: center; justify-content: center;
@@ -342,7 +332,6 @@ body {
 .mbtn.gold { background: var(--yellow); color: var(--line); box-shadow: 0 8px 0 var(--line); }
 .mbtn.gold:active { transform: translateY(8px); box-shadow: 0 0 0 transparent; }
 
-/* ── 애니메이션 ── */
 @keyframes fadein { from { opacity: 0; transform: translateY(10px) } to { opacity: 1; transform: none } }
 @keyframes float { 0%,100%{transform:translateY(0) rotate(-3deg)} 50%{transform:translateY(-5px) rotate(-3deg)} }
 @keyframes bouncein { 0% { transform: scale(1) rotate(10deg); } 100% { transform: scale(1.15) rotate(15deg); } }
@@ -350,7 +339,6 @@ body {
 
 #right-panel { transition: opacity 0.3s, filter 0.3s; background: #FFF0F5; }
 
-/* ── 플로팅 텍스트 이펙트 스타일 ── */
 .floating-txt {
   position: absolute;
   font-family: 'Fredoka', 'Noto Sans', sans-serif;
@@ -373,7 +361,20 @@ body {
   100% { transform: translateY(-90px) scale(0.8); opacity: 0; }
 }
 
-/* ── 모바일 대응 ── */
+/* ── 인트로 모달 전용 스타일 ── */
+.intro-rule {
+  display: flex; align-items: flex-start; gap: 12px;
+  background: #F9F0FF; border: 2.5px solid var(--line);
+  border-radius: 14px; padding: 10px 14px;
+  text-align: left; font-size: 14px; font-weight: 700; line-height: 1.5;
+}
+.intro-rule .ir-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+.intro-rule .ir-body strong { display: block; font-size: 13px; font-weight: 900; margin-bottom: 2px; }
+.intro-rules-wrap { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; position: relative; z-index: 1; }
+.intro-title-wrap { margin-bottom: 16px; }
+.intro-title-wrap .m-ttl { margin-bottom: 4px; }
+.intro-subtitle { font-size: 13px; font-weight: 700; color: #888; }
+
 @media (max-width: 600px) {
   #scene { grid-template-columns: 1fr; }
   #mid-col { flex-direction: row; flex-wrap: wrap; justify-content: center; padding: 16px; }
@@ -387,9 +388,8 @@ body {
 
 <div id="game-console">
 
-  <!-- ── 심플 HUD ── -->
   <div id="hud">
-    <div class="logo">✨<em>GLOW</em><br>TYCOON</div>
+    <div class="logo">✨<em>Keep</em>it Real</div>
     <div class="hud-right">
       <div class="hstat day-stat">
         <span class="label">DAY</span>
@@ -406,7 +406,6 @@ body {
     </div>
   </div>
 
-  <!-- ── 목표 게이지 ── -->
   <div id="goalbar">
     <div class="gi">
       <div class="gi-lbl"><span>Revenue Goal</span><span id="gl-m">0 / 1,000,000</span></div>
@@ -418,9 +417,7 @@ body {
     </div>
   </div>
 
-  <!-- ── 메인 시술 씬 ── -->
   <div id="scene">
-    <!-- 왼쪽: 진료 차트 -->
     <div class="face-panel" id="left-panel">
       <div class="fp-title">Patient Chart</div>
       <div class="face-box">
@@ -431,7 +428,6 @@ body {
       </div>
     </div>
 
-    <!-- 중앙 컨트롤 기기 영역 -->
     <div id="mid-col">
       <div class="dev-box">
         <svg width="70" height="70" viewBox="0 0 100 100">
@@ -458,7 +454,6 @@ body {
       <button id="go-btn" disabled onclick="doTreat()">Select Patient</button>
     </div>
 
-    <!-- 오른쪽: 결과 모니터 -->
     <div class="face-panel panel-disabled" id="right-panel">
       <div class="fp-title">Result Monitor</div>
       <div class="face-box">
@@ -472,18 +467,57 @@ body {
 
   <div id="warn-banner">🚨 <span id="warn-txt"></span></div>
 
-  <!-- ── 대기줄 ── -->
   <div id="queue-wrap">
     <div class="queue-title">👥 Waiting Room <span style="font-size:11px; font-weight:normal; color:#666; margin-left:6px;">Click to call!</span></div>
     <div id="queue-row"></div>
   </div>
 
-  <!-- ── 로그 보드 ── -->
   <div id="log-box" style="margin-top: 16px;"></div>
 
 </div>
 
-<!-- ── 결과 팝업 모달 ── -->
+<!-- ── 인트로 안내 모달 ── -->
+<div class="ov show" id="intro-ov">
+  <div class="modal">
+    <div class="intro-title-wrap">
+      <div class="m-ttl" style="font-size:32px;">✨ Keep it Real</div>
+      <div class="intro-subtitle">Run your clinic — the right way.</div>
+    </div>
+    <div class="intro-rules-wrap">
+      <div class="intro-rule">
+        <span class="ir-icon">💰</span>
+        <div class="ir-body">
+          <strong>Revenue Goal: $1,000,000</strong>
+          Earn money by treating patients. Reach the goal to win!
+        </div>
+      </div>
+      <div class="intro-rule">
+        <span class="ir-icon">⭐</span>
+        <div class="ir-body">
+          <strong>Reputation (starts at 60 / 100)</strong>
+          If reputation hits 0, the clinic closes — Game Over!
+        </div>
+      </div>
+      <div class="intro-rule">
+        <span class="ir-icon">✅</span>
+        <div class="ir-body">
+          <strong>Genuine Cartridge</strong>
+          Costs more, but 100% safe. Builds trust every treatment.
+        </div>
+      </div>
+      <div class="intro-rule" style="background:#FFF0F0;">
+        <span class="ir-icon">⚠️</span>
+        <div class="ir-body">
+          <strong>Fake Cartridge</strong>
+          Cheaper upfront — but side effects grow with every use.<br>
+          Burns &amp; tiger marks mean huge compensation and reputation loss!
+        </div>
+      </div>
+    </div>
+    <button class="mbtn gold" onclick="closeIntro()">Let's Start! 🏥</button>
+  </div>
+</div>
+
 <div class="ov" id="r-ov">
   <div class="modal">
     <div class="m-face-wrap" id="r-face-wrap"></div>
@@ -494,7 +528,6 @@ body {
   </div>
 </div>
 
-<!-- ── 엔딩 팝업 모달 ── -->
 <div class="ov" id="e-ov">
   <div class="modal">
     <div class="m-face-wrap" id="e-face-wrap"></div>
@@ -505,25 +538,33 @@ body {
 </div>
 
 <script>
+// ── 기본 환자 풀 (burnState: null = 정상) ──
 const PT=[
-  {id:1,name:'Jiyoung K.',concern:'Sagging Cheeks',   fee:110000,sk:'f1'},
-  {id:2,name:'Misook P.',concern:'Neck Wrinkles',   fee:140000,sk:'f2',vip:1},
-  {id:3,name:'Sujin L.',concern:'Jawline Lift',fee:120000,sk:'f3'},
-  {id:4,name:'Haeun C.',concern:'Eye Firming',  fee:100000,sk:'f4'},
-  {id:5,name:'Taeyoung J.',concern:'Forehead Lines',  fee:115000,sk:'m1'},
-  {id:6,name:'Sohee H.',concern:'Full Face Lift',fee:160000,sk:'f2',vip:1},
-  {id:7,name:'Minji O.',concern:'Drooping Mouth',fee:105000,sk:'f3'},
-  {id:8,name:'Chaewon Y.',concern:'Smile Lines',   fee:125000,sk:'f1'},
+  {id:1,name:'Irene M.',  concern:'Sagging Cheeks',  fee:110000,sk:'f1'},
+  {id:2,name:'Ellie L.C.',   concern:'Neck Wrinkles',   fee:140000,sk:'f2',vip:1},
+  {id:3,name:'Camille D.', concern:'Jawline Lift',    fee:120000,sk:'f3'},
+  {id:4,name:'Emma R.',    concern:'Eye Firming',     fee:100000,sk:'f4'},
+  {id:5,name:'Chris W.',   concern:'Forehead Lines',  fee:115000,sk:'m1'},
+  {id:6,name:'Victoria B.',concern:'Full Face Lift',  fee:160000,sk:'f2',vip:1},
+  {id:7,name:'Emily S.',concern:'Drooping Mouth',  fee:105000,sk:'f3'},
+  {id:8,name:'Gwen S.',   concern:'Smile Lines',     fee:125000,sk:'f5'},
 ];
+
 const SK={
   f1:{skin:'#FDD9A8',shade:'#F0C070',hair:'#2A1008',hrhi:'#5A2E14',lip:'#E87090',blush:'rgba(255,130,130,.22)',brow:'#2A1008'},
   f2:{skin:'#F5C87A',shade:'#E0A050',hair:'#5A2E10',hrhi:'#8A4828',lip:'#D06878',blush:'rgba(240,110,90,.18)',brow:'#5A2E10'},
   f3:{skin:'#ECA860',shade:'#D08838',hair:'#180C04',hrhi:'#3C1E0C',lip:'#C05868',blush:'rgba(210,90,70,.15)',brow:'#180C04'},
   f4:{skin:'#FFE0B8',shade:'#F8C898',hair:'#4A2818',hrhi:'#7A4838',lip:'#F090A8',blush:'rgba(255,150,150,.25)',brow:'#4A2818'},
+  f5:{skin:'#FFE0B8',shade:'#E2E5EC',hair:'#1A1C23',hrhi:'#3E4455',lip:'#BD7A88',blush:'rgba(210,140,150,.15)',brow:'#1A1C23'},
   m1:{skin:'#F0C890',shade:'#DCA868',hair:'#1A0E08',hrhi:'#3A2010',lip:'#B07868',blush:'rgba(190,100,80,.12)',brow:'#1A0E08'},
 };
 
-/* ── 얼굴 그리기 (최적화된 이펙트 적용) ── */
+// ── 화상 단계 설정 ──
+// burn_severe: 심한 화상 → 게임오버급 패널티, 재방문 없음
+// burn_mid:    보통 화상 (기존) → 큰 패널티, 재방문 없음
+// burn_light:  가벼운 화상 → 소패널티, 환자가 가벼운 화상 흔적을 가진 채 재방문 가능
+const BURN_STATES = ['burn_severe','burn_mid','burn_light'];
+
 function drawFace(el, sk, state){
   const W=150, H=170;
   el.setAttribute('viewBox',`0 0 ${W} ${H}`);
@@ -533,11 +574,12 @@ function drawFace(el, sk, state){
   const clipId = 'cl_'+Math.random().toString(36).slice(2,7);
 
   const P = {
-    f1:{ fcy:84, frx:44, fry:52, eyeY:76, mouthY:108, browY:62, eyeRx:11,  eyeRy:9,  eyeGap:21, pupilR:4.5, hairStyle:'bob', wrinkle:false, aged:false },
-    f2:{ fcy:88, frx:46, fry:54, eyeY:78, mouthY:114, browY:64, eyeRx:10,  eyeRy:7.5, eyeGap:22, pupilR:4, hairStyle:'short_gray', wrinkle:true, aged:true },
-    f3:{ fcy:82, frx:38, fry:56, eyeY:74, mouthY:106, browY:60, eyeRx:13,  eyeRy:11, eyeGap:20, pupilR:5.5, hairStyle:'long', wrinkle:false, aged:false },
-    f4:{ fcy:86, frx:48, fry:52, eyeY:78, mouthY:108, browY:64, eyeRx:14,  eyeRy:12, eyeGap:20, pupilR:6, hairStyle:'twin_tail', wrinkle:false, aged:false },
-    m1:{ fcy:86, frx:46, fry:52, eyeY:76, mouthY:110, browY:62, eyeRx:10,  eyeRy:7,  eyeGap:22, pupilR:4.5, hairStyle:'male_short', wrinkle:true, aged:false },
+    f1:{ fcy:84, frx:44, fry:52, eyeY:76, mouthY:108, browY:62, eyeRx:11,  eyeRy:9,   eyeGap:21, pupilR:4.5, hairStyle:'bob',        wrinkle:false, aged:false },
+    f2:{ fcy:88, frx:46, fry:54, eyeY:78, mouthY:114, browY:64, eyeRx:10,  eyeRy:7.5, eyeGap:22, pupilR:4,   hairStyle:'short_gray', wrinkle:true,  aged:true  },
+    f3:{ fcy:82, frx:38, fry:56, eyeY:74, mouthY:106, browY:60, eyeRx:13,  eyeRy:11,  eyeGap:20, pupilR:5.5, hairStyle:'long',        wrinkle:false, aged:false },
+    f4:{ fcy:86, frx:48, fry:52, eyeY:78, mouthY:108, browY:64, eyeRx:14,  eyeRy:12,  eyeGap:20, pupilR:6,   hairStyle:'twin_tail',   wrinkle:false, aged:false },
+    f5:{ fcy:86, frx:48, fry:52, eyeY:78, mouthY:108, browY:64, eyeRx:14,  eyeRy:12,  eyeGap:20, pupilR:6,   hairStyle:'straight_long',   wrinkle:false, aged:false },
+    m1:{ fcy:86, frx:46, fry:52, eyeY:76, mouthY:110, browY:62, eyeRx:10,  eyeRy:7,   eyeGap:22, pupilR:4.5, hairStyle:'male_short',  wrinkle:true,  aged:false },
   };
   const p = P[sk]||P.f1;
   const {fcy,frx,fry,eyeY,mouthY,browY,eyeRx,eyeRy,eyeGap,pupilR} = p;
@@ -607,13 +649,30 @@ function drawFace(el, sk, state){
     </g>
     <rect x="${cx-50}" y="${H-28}" width="100" height="20" rx="10" fill="#BB1111" opacity=".93"/>
     <text x="${cx}" y="${H-14}" text-anchor="middle" font-size="10.5" fill="white" font-weight="900" font-family="Noto Sans">Tiger Stripe Marks!</text>`;
-  } else if(state==='burn'){
+
+  } else if(state==='burn_severe'){
+    // 심한 화상: 넓고 진한 붉은 자국 + 물집 느낌 + 여러 부위
     let dots = '';
-    for(let i=0; i<3; i++) {
-      for(let j=0; j<2; j++) {
-        dots += `<circle cx="${cx-35 + i*7}" cy="${eyeY+20 + j*7}" r="1.8" fill="#520"/>`;
-        dots += `<circle cx="${cx+22 + i*7}" cy="${eyeY+20 + j*7}" r="1.8" fill="#520"/>`;
-      }
+    for(let i=0; i<5; i++) for(let j=0; j<3; j++){
+      dots+=`<circle cx="${cx-38+i*8}" cy="${eyeY+14+j*9}" r="${1.5+Math.random()}" fill="#6B1A00" opacity=".7"/>`;
+    }
+    overlay=`<g clip-path="url(#${clipId})">
+      <ellipse cx="${cx-26}" cy="${eyeY+22}" rx="26" ry="18" fill="rgba(200,30,10,0.55)"/>
+      <ellipse cx="${cx-26}" cy="${eyeY+22}" rx="18" ry="12" fill="rgba(160,10,0,0.65)"/>
+      <ellipse cx="${cx+26}" cy="${eyeY+22}" rx="26" ry="18" fill="rgba(200,30,10,0.55)"/>
+      <ellipse cx="${cx+26}" cy="${eyeY+22}" rx="18" ry="12" fill="rgba(160,10,0,0.65)"/>
+      <ellipse cx="${cx}" cy="${mouthY-10}" rx="16" ry="10" fill="rgba(180,20,0,0.35)"/>
+      ${dots}
+    </g>
+    <rect x="${cx-50}" y="${H-28}" width="100" height="20" rx="10" fill="#8B1000" opacity=".95"/>
+    <text x="${cx}" y="${H-14}" text-anchor="middle" font-size="10" fill="white" font-weight="900" font-family="Noto Sans">Severe Burns!</text>`;
+
+  } else if(state==='burn_mid'){
+    // 보통 화상 (기존 burn)
+    let dots = '';
+    for(let i=0; i<3; i++) for(let j=0; j<2; j++){
+      dots+=`<circle cx="${cx-35+i*7}" cy="${eyeY+20+j*7}" r="1.8" fill="#520"/>`;
+      dots+=`<circle cx="${cx+22+i*7}" cy="${eyeY+20+j*7}" r="1.8" fill="#520"/>`;
     }
     overlay=`<g clip-path="url(#${clipId})">
       <ellipse cx="${cx-28}" cy="${eyeY+24}" rx="20" ry="14" fill="rgba(220,50,50,0.4)"/>
@@ -624,8 +683,24 @@ function drawFace(el, sk, state){
     </g>
     <rect x="${cx-44}" y="${H-28}" width="88" height="20" rx="10" fill="#B83C10" opacity=".93"/>
     <text x="${cx}" y="${H-14}" text-anchor="middle" font-size="10.5" fill="white" font-weight="900" font-family="Noto Sans">Burn Marks!</text>`;
+
+  } else if(state==='burn_light'){
+    // 가벼운 화상: 얕은 붉은 홍조 형태, 작은 점들만
+    let dots = '';
+    for(let i=0; i<3; i++){
+      dots+=`<circle cx="${cx-28+i*6}" cy="${eyeY+22}" r="1.2" fill="rgba(180,60,30,0.5)"/>`;
+      dots+=`<circle cx="${cx+16+i*6}" cy="${eyeY+22}" r="1.2" fill="rgba(180,60,30,0.5)"/>`;
+    }
+    overlay=`<g clip-path="url(#${clipId})">
+      <ellipse cx="${cx-24}" cy="${eyeY+20}" rx="14" ry="8" fill="rgba(230,100,60,0.28)"/>
+      <ellipse cx="${cx+24}" cy="${eyeY+20}" rx="14" ry="8" fill="rgba(230,100,60,0.28)"/>
+      ${dots}
+    </g>
+    <rect x="${cx-46}" y="${H-28}" width="92" height="20" rx="10" fill="#C05020" opacity=".88"/>
+    <text x="${cx}" y="${H-14}" text-anchor="middle" font-size="10.5" fill="white" font-weight="900" font-family="Noto Sans">Minor Redness</text>`;
+
   } else if(state==='happy'){
-    const star = (x, y, s, c) => `<path d="M${x},${y-s} Q${x},${y} ${x+s},${y} Q${x},${y} ${x},${y+s} Q${x},${y} ${x-s},${y} Q${x},${y} ${x},${y-s} Z" fill="${c}" opacity="0.9"/>`;
+    const star = (x, y, s, col) => `<path d="M${x},${y-s} Q${x},${y} ${x+s},${y} Q${x},${y} ${x},${y+s} Q${x},${y} ${x-s},${y} Q${x},${y} ${x},${y-s} Z" fill="${col}" opacity="0.9"/>`;
     overlay=`
       <ellipse cx="${cx-30}" cy="${eyeY+18}" rx="16" ry="10" fill="rgba(255,100,120,.45)"/>
       <ellipse cx="${cx+30}" cy="${eyeY+18}" rx="16" ry="10" fill="rgba(255,100,120,.45)"/>
@@ -641,19 +716,34 @@ function drawFace(el, sk, state){
   el.innerHTML = defs + hBack + ears + faceShape + hFront + brows + blush + nose + wrinkles + eyes + mouth_ + overlay;
 }
 
-/* ── 게임 상태 및 로직 ── */
+// ── 게임 상태 ──
 const GOAL=1000000;
+// burn_light 재방문 환자에게 부여할 고유 id 시작값
+let revisitIdCounter = 100;
 let G={};
+
 function initG(){
-  G={money:0,rep:60,day:1,illUse:0,cart:null,sel:null,queue:[],done:new Set(),pend:null};
+  G={money:0,rep:60,day:1,illUse:0,cart:null,sel:null,queue:[],done:new Set()};
+  revisitIdCounter=100;
   genQ();
 }
+
 function genQ(){
-  G.queue=[...PT].sort(()=>Math.random()-.5).slice(0,5);
-  G.done=new Set(); G.sel=null; G.cart=null;
+  // 기존 재방문 환자 목록은 유지 (새 스테이지에도 살아있음)
+  const revisitPatients = G.queue ? G.queue.filter(p=>p.isRevisit && !G.done.has(p.id)) : [];
+  
+  // 새 환자 5명 - 이미 큐에 있는 재방문 환자 수 고려
+  const newCount = Math.max(3, 5 - revisitPatients.length);
+  const newPatients = [...PT].sort(()=>Math.random()-.5).slice(0, newCount);
+  
+  G.queue = [...revisitPatients, ...newPatients];
+  G.done = new Set();
+  G.sel = null;
+  G.cart = null;
 }
-function illRisk(){return Math.min(80,20+G.illUse*18);}
-function fmt(n){const a=Math.abs(Math.round(n));return (n<0?'-':'')+a.toLocaleString('en-US');}
+
+function illRisk(){ return Math.min(80, 20 + G.illUse * 18); }
+function fmt(n){ const a=Math.abs(Math.round(n)); return (n<0?'-':'')+a.toLocaleString('en-US'); }
 
 function render(){
   document.getElementById('hd-d').textContent=G.day;
@@ -669,7 +759,7 @@ function render(){
 
   const risk=illRisk();
   document.getElementById('ill-sub').textContent=`Cost 8,000 · Risk ${risk}%`;
-  
+
   const wb=document.getElementById('warn-banner');
   if(G.illUse>0){
     wb.style.display='flex';
@@ -678,26 +768,28 @@ function render(){
 
   const lf=document.getElementById('lf-svg');
   const li=document.getElementById('left-info');
-  
   if(G.sel){
-    drawFace(lf,G.sel.sk,'normal');
-    li.innerHTML=`<div class="pname">${G.sel.name}${G.sel.vip?' ⭐':''}</div><div class="ptag">${G.sel.concern}</div><div class="pfee">$${fmt(G.sel.fee)}</div>`;
+    // 재방문 burn_light 환자는 가벼운 화상 흔적 있는 얼굴로 표시
+    const faceState = G.sel.isRevisit ? 'burn_light' : 'normal';
+    drawFace(lf, G.sel.sk, faceState);
+    const burnNote = G.sel.isRevisit ? '<div class="ptag ptag-burn">🩹 Minor Burn (Revisit)</div>' : '';
+    li.innerHTML=`<div class="pname">${G.sel.name}${G.sel.vip?' ⭐':''}</div>${burnNote}<div class="ptag">${G.sel.concern}</div><div class="pfee">$${fmt(G.sel.fee)}</div>`;
   } else {
     lf.innerHTML=''; li.innerHTML='<div class="ehint">Call a patient<br>from the waiting room!</div>';
   }
-  
+
   document.getElementById('btn-gen').classList.toggle('on',G.cart==='genuine');
   document.getElementById('btn-ill').classList.toggle('on',G.cart==='illegal');
-  
+
   const dl=document.getElementById('dev-lbl');
   dl.textContent=G.cart==='genuine'?'GENUINE':G.cart==='illegal'?'FAKE':'WAITING';
   dl.style.fill=G.cart==='genuine'?'var(--mint)':G.cart==='illegal'?'var(--red)':'#888';
-  
+
   const gb=document.getElementById('go-btn');
   if(G.sel&&G.cart){gb.disabled=false;gb.textContent='START!';}
   else if(!G.sel){gb.disabled=true;gb.textContent='Select Patient';}
   else{gb.disabled=true;gb.textContent='Select Cartridge';}
-  
+
   renderQ();
 }
 
@@ -706,32 +798,37 @@ function renderQ(){
   row.innerHTML='';
   const EMOJ={f1:'👩',f2:'👩‍🦳',f3:'👩‍🦰',f4:'👧',m1:'🧑'};
   G.queue.forEach(p=>{
+    const isDone = G.done.has(p.id);
+    const isSelected = G.sel?.id===p.id;
     const d=document.createElement('div');
-    d.className='qc'+(G.sel?.id===p.id?' on':'')+(G.done.has(p.id)?' done':'');
-    d.innerHTML=(p.vip?'<div class="qvip">VIP</div>':'')+
-      `<div class="qface">${EMOJ[p.sk]||'👤'}</div><div class="qname">${p.name}</div><div class="qcon">${p.concern}</div>`;
-    d.onclick=()=>{if(!G.done.has(p.id)){G.sel=p;G.cart=null;hideRight();render();}};
+    let cls='qc';
+    if(isSelected) cls+=' on';
+    if(isDone) cls+=' done';
+    if(p.isRevisit && !isDone) cls+=' burn-revisit';
+    d.className=cls;
+    const vipBadge = p.vip ? '<div class="qvip">VIP</div>' : '';
+    const burnBadge = p.isRevisit ? '<div class="qburn-badge">🩹</div>' : '';
+    d.innerHTML=vipBadge+burnBadge+
+      `<div class="qface">${EMOJ[p.sk]||'👤'}</div><div class="qname">${p.name}</div><div class="qcon">${p.isRevisit?'Burn Follow-up':p.concern}</div>`;
+    d.onclick=()=>{ if(!isDone){ G.sel=p; G.cart=null; hideRight(); render(); }};
     row.appendChild(d);
   });
 }
 
-function pickCart(t){if(!G.sel)return;G.cart=t;render();}
+function pickCart(t){ if(!G.sel)return; G.cart=t; render(); }
 
-function showFloatingText(text, isGood) {
-  const el = document.createElement('div');
-  el.className = 'floating-txt ' + (isGood ? 'f-good' : 'f-bad');
-  el.textContent = text;
-  
-  const midCol = document.getElementById('mid-col');
-  const rect = midCol.getBoundingClientRect();
-  const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-  el.style.left = (rect.left + rect.width / 2 - 40 + scrollLeft) + 'px';
-  el.style.top = (rect.top + 20 + scrollTop) + 'px';
-  
+function showFloatingText(text, isGood){
+  const el=document.createElement('div');
+  el.className='floating-txt '+(isGood?'f-good':'f-bad');
+  el.textContent=text;
+  const midCol=document.getElementById('mid-col');
+  const rect=midCol.getBoundingClientRect();
+  const scrollLeft=window.pageXOffset||document.documentElement.scrollLeft;
+  const scrollTop=window.pageYOffset||document.documentElement.scrollTop;
+  el.style.left=(rect.left+rect.width/2-40+scrollLeft)+'px';
+  el.style.top=(rect.top+20+scrollTop)+'px';
   document.body.appendChild(el);
-  setTimeout(() => el.remove(), 1200);
+  setTimeout(()=>el.remove(),1200);
 }
 
 function doTreat(){
@@ -741,63 +838,126 @@ function doTreat(){
 
   if(gen){
     ok=true;
-    mD=p.fee-20000;
-    rD=p.vip?6:3;
+    // 재방문 burn_light 환자를 정품으로 치료하면 보너스 평판
+    mD = p.fee - 20000;
+    rD = p.isRevisit ? 8 : (p.vip ? 6 : 3);
     fst='happy';
-    eff='Perfect Lifting! ✨';
+    eff = p.isRevisit ? 'Fully Recovered! 🌟' : 'Perfect Lifting! ✨';
   } else {
-    const currentRisk = illRisk(); // UI에 표시된 현재 위험도를 먼저 저장
+    const currentRisk=illRisk();
     G.illUse++;
-    ok=(Math.random()*100)>currentRisk; // 화면에 고지된 확률로 공정하게 판정
+    ok=(Math.random()*100)>currentRisk;
     if(ok){
       mD=p.fee-8000;
       rD=1;
       fst='happy';
       eff='Safe for now... ⚠️';
     } else {
-      fst=Math.random()<0.5?'tiger':'burn';
-      mD=-(p.fee*(p.vip?4:3));
-      rD=p.vip?-35:-22;
-      eff=fst==='tiger'?'Tiger Marks! 😰':'Burn Marks! 🔥';
+      // 화상 3단계 랜덤 결정
+      const burnRoll = Math.random();
+      if(burnRoll < 0.25){
+        fst = 'burn_severe'; // 25%: 심한 화상
+      } else if(burnRoll < 0.65){
+        fst = 'burn_mid';    // 40%: 보통 화상
+      } else {
+        fst = 'burn_light';  // 35%: 가벼운 화상
+      }
+      // 부작용이 tiger인지 burn인지 결정 (tiger vs burn 3단계)
+      const useTiger = Math.random() < 0.35; // 35% 확률로 타이거
+      if(useTiger) fst = 'tiger';
+
+      // 패널티 설정
+      if(fst==='burn_severe'){
+        mD = -(p.fee*(p.vip?5:4));
+        rD = p.vip ? -40 : -28;
+        eff = 'Severe Burns! 🔥🔥';
+      } else if(fst==='burn_mid'){
+        mD = -(p.fee*(p.vip?4:3));
+        rD = p.vip ? -35 : -22;
+        eff = 'Burn Marks! 🔥';
+      } else if(fst==='burn_light'){
+        mD = -(p.fee*1.2); // 가벼운 화상은 소액 배상
+        rD = -8;
+        eff = 'Minor Redness 🌡️';
+      } else { // tiger
+        mD = -(p.fee*(p.vip?4:3));
+        rD = p.vip ? -35 : -22;
+        eff = 'Tiger Marks! 😰';
+      }
     }
   }
 
   G.money+=mD;
   G.rep=Math.max(0,Math.min(100,G.rep+rD));
   G.done.add(p.id);
-  
-  const priceSign = mD >= 0 ? `+$${mD.toLocaleString()}` : `-$${Math.abs(mD).toLocaleString()}`;
+
+  // burn_light 환자 재방문 처리: 게임오버가 아닌 경우에만
+  let willRevisit = false;
+  if(!ok && fst==='burn_light'){
+    const endType = getEndTypeWith(G.money, G.rep);
+// burn_light 재방문 확률화: 50% 확률로 next day에 등장
+    if(!endType){
+      if(Math.random() < 0.5){
+        willRevisit = true;
+        G._pendingRevisit = {
+          id: revisitIdCounter++,
+          name: p.name,
+          concern: p.concern,
+          fee: Math.round(p.fee * 0.7),
+          sk: p.sk,
+          vip: p.vip,
+          isRevisit: true,
+          // next day에만 등장하도록 등장 예정 day 기록
+          revisitDay: G.day + 1,
+        };
+      }
+    }
+  }
+
+  const priceSign = mD>=0 ? `+$${mD.toLocaleString()}` : `-$${Math.abs(mD).toLocaleString()}`;
   showFloatingText(priceSign, ok);
 
   G.sel=null;
   G.cart=null;
 
   const rf=document.getElementById('rf-svg');
-  drawFace(rf,p.sk,fst);
-  
-  const rightPanel = document.getElementById('right-panel');
+  drawFace(rf, p.sk, fst);
+
+  const rightPanel=document.getElementById('right-panel');
   rightPanel.classList.remove('panel-disabled');
-  
+
   document.getElementById('right-info').innerHTML=
     `<div class="pname" style="color:${ok?'var(--mint-dark)':'var(--red)'}">${ok?'✅ Success':'❌ Side Effect'}</div>
      <div class="ptag" style="background:${ok?'#E0FAF3':'#FFE8E8'};color:${ok?'var(--mint-dark)':'var(--red-dark)'}">${eff}</div>`;
 
   addLog(ok
-    ?`✅ Treatment completed for ${p.name}! (+$${fmt(mD)}, Rep +${rD})`
-    :`❌ Side effect occurred for ${p.name}! (-$${fmt(Math.abs(mD))}, Rep ${rD})`,
+    ? `✅ ${p.name} treated! (+$${fmt(mD)}, Rep +${rD})`
+    : `❌ Side effect on ${p.name}! (-$${fmt(Math.abs(mD))}, Rep ${rD})`,
     ok?'ok':'bad');
 
   let desc='';
-  if(ok&&gen)            desc=`${p.name} left with a bright smile!\nPerfect lifting thanks to the genuine cartridge!`;
-  else if(ok&&!gen)      desc=`Got away with it this time, but...\nthe side effect risk has increased to ${illRisk()}%.\nIt's really dangerous to keep using it!`;
-  else if(fst==='tiger') desc=`Severe tiger stripe scars appeared on the skin\ndue to the unstable energy of the fake cartridge.\n${p.name} is extremely angry.`;
-  else                   desc=`Burn marks appeared on ${p.name}'s skin\ndue to the fake cartridge overheating.\nPaid massive compensation, and reputation plummeted.`;
+  if(ok&&gen){
+    desc = p.isRevisit
+      ? `${p.name}'s skin has fully recovered!\nProper treatment with genuine cartridge\nrestored trust and reputation! 🌟`
+      : `${p.name} left with a bright smile!\nPerfect lifting thanks to the genuine cartridge!`;
+  } else if(ok&&!gen){
+    desc=`Got away with it this time, but...\nthe side effect risk has increased to ${illRisk()}%.\nIt's really dangerous to keep using it!`;
+  } else if(fst==='tiger'){
+    desc=`Severe tiger stripe scars appeared on the skin\ndue to the unstable energy of the fake cartridge.\n${p.name} is extremely angry.`;
+  } else if(fst==='burn_severe'){
+    desc=`Extensive severe burns across ${p.name}'s face\nfrom the overheating fake cartridge.\nHuge compensation paid — clinic reputation destroyed.`;
+  } else if(fst==='burn_mid'){
+    desc=`Burn marks appeared on ${p.name}'s skin\ndue to the fake cartridge overheating.\nPaid massive compensation, and reputation plummeted.`;
+  } else if(fst==='burn_light'){
+    desc=`Minor redness appeared on ${p.name}'s skin.\nA small compensation was paid.\n${willRevisit?`${p.name} will return for follow-up treatment.`:'Hopefully it heals soon...'}`;
+  }
 
   const rfw=document.getElementById('r-face-wrap');
   rfw.innerHTML='<svg width="110" height="125" viewBox="0 0 150 170" id="modal-face-svg"></svg>';
   drawFace(document.getElementById('modal-face-svg'), p.sk, fst);
 
-  document.getElementById('r-ttl').textContent=ok?'Success!':'Side Effect!';
+  document.getElementById('r-ttl').textContent=ok?'Success!':
+    (fst==='burn_severe'?'Severe Burns!':fst==='burn_light'?'Minor Redness':'Side Effect!');
   document.getElementById('r-ttl').style.color=ok?'var(--mint-dark)':'var(--red-dark)';
   document.getElementById('r-dsc').textContent=desc;
   document.getElementById('r-chips').innerHTML=
@@ -810,16 +970,16 @@ function doTreat(){
   document.getElementById('r-ov').classList.add('show');
 }
 
-function getEndType(){
-  if(G.money>=GOAL)    return 'win';
-  if(G.rep<=0)         return 'rep';
-  if(G.money<=-150000) return 'broke';
+function getEndTypeWith(money, rep){
+  if(money>=GOAL) return 'win';
+  if(rep<=0)      return 'rep';
+  if(money<=-150000) return 'broke';
   return null;
 }
+function getEndType(){ return getEndTypeWith(G.money, G.rep); }
 
 function hideRight(){
-  const rightPanel = document.getElementById('right-panel');
-  rightPanel.classList.add('panel-disabled');
+  document.getElementById('right-panel').classList.add('panel-disabled');
   document.getElementById('rf-svg').innerHTML='';
   document.getElementById('right-info').innerHTML='<div class="ehint">Results will be<br>displayed here</div>';
 }
@@ -832,13 +992,28 @@ function closeResult(){
     setTimeout(()=>showEnd(t),250);
     return;
   }
+
   if(G.queue.every(p=>G.done.has(p.id))){
     G.day++;
     setTimeout(()=>{
-      hideRight(); // 👈 새로운 날이 시작될 때 우측 결과 모니터 초기화
-      genQ(); render();
+      hideRight();
+      // next day 도래 시 burn_light 재방문 환자 추가 (revisitDay 일치 확인)
+      if(G._pendingRevisit && G._pendingRevisit.revisitDay === G.day){
+        const revisit = G._pendingRevisit;
+        G._pendingRevisit = null;
+        genQ();
+        if(!G.queue.find(q=>q.id===revisit.id)){
+          G.queue.push(revisit);
+        }
+        addLog(`🩹 ${revisit.name} is back for follow-up treatment!`,'warn');
+      } else {
+        genQ();
+      }
+      render();
       addLog(`☀️ STAGE ${G.day} starts! New patients have arrived.`,'warn');
     },300);
+  } else {
+    render();
   }
 }
 
@@ -849,10 +1024,10 @@ function showEnd(t){
     rep:  `Reports of fake cartridge side effects spread,\nand the clinic's reputation hit rock bottom.\n\nDue to the viral reviews of tiger marks and burn injuries,\nyou eventually had to close the hospital.`,
     broke:`Bankrupt from being unable to afford compensation.\n\nThe losses were dozens of times larger than\nthe small amount saved by using fake cartridges.\nUsing genuine products is the real long-term gain.`,
   };
-  
+
   const efw=document.getElementById('e-face-wrap');
   const endSk=['f1','f2','f3','f4','m1'][Math.floor(Math.random()*5)];
-  const endState=t==='win'?'happy':(Math.random()<.5?'tiger':'burn');
+  const endState=t==='win'?'happy':(Math.random()<.33?'tiger':Math.random()<.5?'burn_severe':'burn_mid');
   efw.innerHTML='<svg width="110" height="125" viewBox="0 0 150 170" id="end-face-svg"></svg>';
   drawFace(document.getElementById('end-face-svg'), endSk, endState);
 
@@ -863,25 +1038,33 @@ function showEnd(t){
   document.getElementById('e-ov').classList.add('show');
 }
 
+function closeIntro(){
+  document.getElementById('intro-ov').classList.remove('show');
+}
+
 function restart(){
   document._pendingEnd=null;
+  document._pendingRevisit=null;
   document.getElementById('e-ov').classList.remove('show');
   document.getElementById('r-ov').classList.remove('show');
   document.getElementById('log-box').innerHTML='';
   hideRight();
   initG(); render();
-  addLog('Game started! Let\'s build the best clinic, Doctor! 💪');
+  addLog("Game started! Let's build the best clinic, Doctor! 💪");
+  // 재시작 시 인트로 다시 표시
+  document.getElementById('intro-ov').classList.add('show');
 }
+
 function addLog(t,cls=''){
   const b=document.getElementById('log-box');
   const d=document.createElement('div');
-  d.className='log '+cls+' fadein';d.textContent=t;
+  d.className='log '+cls+' fadein'; d.textContent=t;
   b.prepend(d);
-  while(b.children.length>4)b.removeChild(b.lastChild);
+  while(b.children.length>4) b.removeChild(b.lastChild);
 }
 
 initG(); render();
-addLog('Game started! Let\'s build the best clinic, Doctor! 💪');
+addLog("Game started! Let's build the best clinic, Doctor! 💪");
 </script>
 </body>
 </html>
